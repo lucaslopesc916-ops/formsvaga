@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin · Respostas — Winner.AI</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:      #000;
+      --surface: #0f0f0f;
+      --border:  rgba(255,255,255,0.1);
+      --text:    #fff;
+      --dim:     rgba(255,255,255,0.42);
+      --hover:   rgba(255,255,255,0.05);
+    }
+
+    body {
+      background: var(--bg); color: var(--text);
+      font-family: 'Inter', sans-serif;
+      -webkit-font-smoothing: antialiased;
+      min-height: 100vh;
+    }
+
+    /* ── password screen ── */
+    #pw-screen {
+      position: fixed; inset: 0;
+      display: flex; align-items: center; justify-content: center;
+      background: var(--bg); z-index: 100;
+    }
+    #pw-screen.hidden { display: none; }
+    .pw-box { width: 100%; max-width: 360px; padding: 2rem; }
+    .pw-box .logo {
+      font-size: 0.7rem; font-weight: 600;
+      letter-spacing: 0.22em; text-transform: uppercase;
+      color: var(--dim); margin-bottom: 2.5rem;
+    }
+    .pw-box h2 { font-size: 1.5rem; font-weight: 300; margin-bottom: 0.4rem; }
+    .pw-box p  { font-size: 0.85rem; color: var(--dim); margin-bottom: 2rem; }
+    .pw-input {
+      width: 100%; background: transparent; border: none;
+      border-bottom: 1px solid var(--border);
+      color: var(--text); caret-color: #fff;
+      font-family: 'Inter', sans-serif; font-size: 1rem;
+      padding: 0.6rem 0; outline: none;
+      transition: border-color 0.2s; margin-bottom: 0.5rem;
+    }
+    .pw-input:focus { border-bottom-color: rgba(255,255,255,0.5); }
+    .pw-err { font-size: 0.78rem; color: #ff5c5c; min-height: 1rem; margin-bottom: 1rem; }
+    .pw-btn {
+      width: 100%; padding: 0.75rem;
+      background: #fff; color: #000;
+      font-family: 'Inter', sans-serif; font-size: 0.8rem;
+      font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase;
+      border: none; cursor: pointer; transition: background 0.2s;
+    }
+    .pw-btn:hover { background: #e0e0e0; }
+
+    /* ── main layout ── */
+    #app { display: none; }
+    #app.visible { display: block; }
+
+    header {
+      border-bottom: 1px solid var(--border);
+      padding: 1.25rem 2rem;
+      display: flex; align-items: center; justify-content: space-between;
+      position: sticky; top: 0; background: var(--bg); z-index: 10;
+    }
+    .header-left { display: flex; align-items: center; gap: 1.5rem; }
+    .h-logo {
+      font-size: 0.7rem; font-weight: 600;
+      letter-spacing: 0.22em; text-transform: uppercase; color: var(--dim);
+    }
+    #total-badge {
+      font-size: 0.75rem; color: var(--dim);
+      border: 1px solid var(--border);
+      padding: 0.2rem 0.6rem;
+    }
+    #search {
+      background: transparent; border: 1px solid var(--border);
+      color: var(--text); font-family: 'Inter', sans-serif;
+      font-size: 0.85rem; padding: 0.45rem 0.85rem;
+      outline: none; width: 220px;
+      transition: border-color 0.2s;
+    }
+    #search:focus { border-color: rgba(255,255,255,0.4); }
+    #search::placeholder { color: var(--dim); }
+
+    /* ── list ── */
+    #list { max-width: 860px; margin: 2rem auto; padding: 0 2rem 4rem; }
+
+    .empty {
+      text-align: center; padding: 5rem 2rem;
+      color: var(--dim); font-size: 0.9rem; font-weight: 300;
+    }
+
+    /* ── card ── */
+    .card {
+      border: 1px solid var(--border);
+      margin-bottom: 0.6rem;
+      transition: border-color 0.15s;
+    }
+    .card:hover { border-color: rgba(255,255,255,0.25); }
+
+    .card-header {
+      display: flex; align-items: center;
+      padding: 1rem 1.25rem;
+      cursor: pointer; user-select: none;
+      gap: 1.2rem;
+    }
+    .card-num {
+      font-size: 0.72rem; color: var(--dim);
+      width: 28px; flex-shrink: 0;
+    }
+    .card-name { font-size: 0.95rem; font-weight: 500; flex: 1; }
+    .card-meta {
+      font-size: 0.78rem; color: var(--dim);
+      display: flex; gap: 1.2rem; flex-shrink: 0;
+    }
+    .card-date { font-size: 0.75rem; color: var(--dim); }
+    .card-chevron {
+      font-size: 0.75rem; color: var(--dim);
+      transition: transform 0.2s; flex-shrink: 0;
+    }
+    .card.open .card-chevron { transform: rotate(180deg); }
+
+    /* ── expanded body ── */
+    .card-body {
+      display: none;
+      border-top: 1px solid var(--border);
+      padding: 1.5rem 1.25rem 1.5rem 3.4rem;
+    }
+    .card.open .card-body { display: block; }
+
+    .sections { display: flex; flex-direction: column; gap: 1.8rem; }
+
+    .sec-title {
+      font-size: 0.65rem; font-weight: 600;
+      letter-spacing: 0.2em; text-transform: uppercase;
+      color: var(--dim); margin-bottom: 0.9rem;
+      padding-bottom: 0.5rem;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .fields { display: flex; flex-direction: column; gap: 0.85rem; }
+    .field-row { display: grid; grid-template-columns: 180px 1fr; gap: 0.75rem; }
+    .field-label {
+      font-size: 0.78rem; color: var(--dim);
+      font-weight: 400; padding-top: 1px; line-height: 1.5;
+    }
+    .field-val {
+      font-size: 0.88rem; font-weight: 300;
+      line-height: 1.6; color: var(--text);
+    }
+    .field-val.empty-val { color: rgba(255,255,255,0.2); font-style: italic; }
+
+    /* chips for travamentos */
+    .chips { display: flex; flex-wrap: wrap; gap: 0.35rem; }
+    .chip {
+      font-size: 0.75rem; padding: 0.22rem 0.65rem;
+      border: 1px solid var(--border);
+      color: var(--text); font-weight: 300;
+    }
+
+    /* loading */
+    #loading {
+      text-align: center; padding: 4rem;
+      color: var(--dim); font-size: 0.85rem; font-weight: 300;
+    }
+
+    @media (max-width: 600px) {
+      header { flex-direction: column; gap: 1rem; align-items: flex-start; }
+      #search { width: 100%; }
+      .field-row { grid-template-columns: 1fr; gap: 0.2rem; }
+      .field-label { color: rgba(255,255,255,0.35); font-size: 0.73rem; }
+      .card-meta { display: none; }
+      .card-body { padding-left: 1.25rem; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- password screen -->
+<div id="pw-screen">
+  <div class="pw-box">
+    <div class="logo">Winner.AI</div>
+    <h2>Painel de respostas</h2>
+    <p>Acesso restrito</p>
+    <input class="pw-input" id="pw-input" type="password" placeholder="Senha"
+      onkeydown="if(event.key==='Enter') checkPw()" />
+    <div class="pw-err" id="pw-err"></div>
+    <button class="pw-btn" onclick="checkPw()">Entrar →</button>
+  </div>
+</div>
+
+<!-- main app -->
+<div id="app">
+  <header>
+    <div class="header-left">
+      <span class="h-logo">Winner.AI · Admin</span>
+      <span id="total-badge">— respostas</span>
+    </div>
+    <input id="search" type="text" placeholder="Buscar por nome ou e-mail…" oninput="filterCards()" />
+  </header>
+  <div id="list">
+    <div id="loading">Carregando…</div>
+  </div>
+</div>
+
+<script>
+const SUPABASE_URL = 'https://errofscpxzcbhloutdpb.supabase.co';
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVycm9mc2NweHpjYmhsb3V0ZHBiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ1NTM1OTIsImV4cCI6MjA5MDEyOTU5Mn0.KLrdir04-WdKkSUYqCZvFeyB36qb2MyBX60szAXfWLI';
+const ADMIN_PASSWORD = 'winner2025'; // troque aqui
+
+let allData = [];
+
+function checkPw() {
+  const val = document.getElementById('pw-input').value;
+  if (val === ADMIN_PASSWORD) {
+    document.getElementById('pw-screen').classList.add('hidden');
+    document.getElementById('app').classList.add('visible');
+    loadData();
+  } else {
+    document.getElementById('pw-err').textContent = 'Senha incorreta.';
+    document.getElementById('pw-input').value = '';
+    document.getElementById('pw-input').focus();
+  }
+}
+
+async function loadData() {
+  try {
+    const res = await fetch(
+      `${SUPABASE_URL}/rest/v1/mentoria_submissions?select=*&order=created_at.desc`,
+      { headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}` } }
+    );
+    allData = await res.json();
+    render(allData);
+  } catch(e) {
+    document.getElementById('loading').textContent = 'Erro ao carregar dados.';
+  }
+}
+
+function render(data) {
+  const list = document.getElementById('list');
+  document.getElementById('total-badge').textContent =
+    `${data.length} resposta${data.length !== 1 ? 's' : ''}`;
+
+  if (!data.length) {
+    list.innerHTML = '<div class="empty">Nenhuma resposta ainda.</div>';
+    return;
+  }
+
+  list.innerHTML = data.map((r, i) => {
+    const date = new Date(r.created_at);
+    const dateStr = date.toLocaleDateString('pt-BR', { day:'2-digit', month:'short', year:'numeric' });
+    const timeStr = date.toLocaleTimeString('pt-BR', { hour:'2-digit', minute:'2-digit' });
+
+    const chips = r.travamentos
+      ? r.travamentos.split(' | ').map(t => `<span class="chip">${t}</span>`).join('')
+      : '<span class="field-val empty-val">—</span>';
+
+    const v = (val) => val
+      ? `<span class="field-val">${val}</span>`
+      : `<span class="field-val empty-val">Não respondido</span>`;
+
+    return `
+    <div class="card" id="card-${i}">
+      <div class="card-header" onclick="toggleCard(${i})">
+        <span class="card-num">${String(i+1).padStart(2,'0')}</span>
+        <span class="card-name">${r.nome || '—'}</span>
+        <span class="card-meta">
+          <span>${r.email || '—'}</span>
+          <span>${r.whatsapp || '—'}</span>
+        </span>
+        <span class="card-date">${dateStr} · ${timeStr}</span>
+        <span class="card-chevron">▼</span>
+      </div>
+      <div class="card-body">
+        <div class="sections">
+
+          <div>
+            <div class="sec-title">Dados básicos</div>
+            <div class="fields">
+              <div class="field-row"><span class="field-label">Instagram</span>${v(r.instagram)}</div>
+            </div>
+          </div>
+
+          <div>
+            <div class="sec-title">Sobre você e seu negócio</div>
+            <div class="fields">
+              <div class="field-row"><span class="field-label">O que faz</span>${v(r.o_que_faz)}</div>
+              <div class="field-row"><span class="field-label">Tempo na área</span>${v(r.tempo_trabalho)}</div>
+              <div class="field-row"><span class="field-label">Tamanho da empresa</span>${v(r.tamanho_empresa)}</div>
+              <div class="field-row"><span class="field-label">Tamanho do time</span>${v(r.tamanho_time)}</div>
+            </div>
+          </div>
+
+          <div>
+            <div class="sec-title">Sobre IA</div>
+            <div class="fields">
+              <div class="field-row"><span class="field-label">IA no dia a dia</span>${v(r.ia_dia_a_dia)}</div>
+              <div class="field-row"><span class="field-label">Maturidade com IA</span>${v(r.maturidade_ia)}</div>
+              <div class="field-row"><span class="field-label">Ferramentas usadas</span>${v(r.ferramentas_ia)}</div>
+              <div class="field-row">
+                <span class="field-label">Maiores travamentos</span>
+                <div class="chips">${chips}</div>
+              </div>
+            </div>
+          </div>
+
+          <div>
+            <div class="sec-title">Intenção e expectativa</div>
+            <div class="fields">
+              <div class="field-row"><span class="field-label">O que vende</span>${v(r.o_que_vende)}</div>
+              <div class="field-row"><span class="field-label">Problema em 30 dias</span>${v(r.problema_30_dias)}</div>
+              <div class="field-row"><span class="field-label">Sucesso em 8 semanas</span>${v(r.sucesso_8_semanas)}</div>
+              <div class="field-row"><span class="field-label">Por que entrou</span>${v(r.motivo_mentoria)}</div>
+              <div class="field-row"><span class="field-label">Info adicional</span>${v(r.info_adicional)}</div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function toggleCard(i) {
+  document.getElementById(`card-${i}`).classList.toggle('open');
+}
+
+function filterCards() {
+  const q = document.getElementById('search').value.toLowerCase();
+  const filtered = allData.filter(r =>
+    (r.nome  || '').toLowerCase().includes(q) ||
+    (r.email || '').toLowerCase().includes(q)
+  );
+  render(filtered);
+}
+
+// focus password input on load
+document.getElementById('pw-input').focus();
+</script>
+</body>
+</html>
