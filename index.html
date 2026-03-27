@@ -1,0 +1,507 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Onboarding · Mentoria de IA — Winner.AI</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
+
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:       #000000;
+      --text:     #ffffff;
+      --dim:      rgba(255,255,255,0.45);
+      --border:   rgba(255,255,255,0.15);
+      --hover-bg: rgba(255,255,255,0.06);
+      --sel-bg:   rgba(255,255,255,0.1);
+      --err:      #ff5c5c;
+    }
+
+    html, body {
+      width: 100%; height: 100%;
+      overflow: hidden;
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Inter', sans-serif;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* progress */
+    #progress-bar {
+      position: fixed; top: 0; left: 0; right: 0; height: 2px;
+      background: rgba(255,255,255,0.08); z-index: 200;
+    }
+    #progress-fill {
+      height: 100%; width: 0%;
+      background: #fff;
+      transition: width 0.5s cubic-bezier(.4,0,.2,1);
+    }
+
+    /* container */
+    #form-wrap {
+      position: fixed; inset: 0;
+      display: flex; align-items: center; justify-content: center;
+      z-index: 10; overflow: hidden;
+    }
+
+    /* slides */
+    .slide {
+      position: absolute;
+      width: 100%; max-width: 640px;
+      padding: clamp(1.5rem, 5vw, 2.5rem);
+      opacity: 0;
+      pointer-events: none;
+      will-change: transform, opacity;
+    }
+    .slide.from-below { transform: translateY(50px); }
+    .slide.from-above { transform: translateY(-50px); }
+    .slide.active {
+      opacity: 1; transform: translateY(0);
+      pointer-events: all;
+      transition: opacity 0.45s ease, transform 0.45s cubic-bezier(.22,1,.36,1);
+    }
+    .slide.exit-up {
+      opacity: 0; transform: translateY(-45px);
+      pointer-events: none;
+      transition: opacity 0.28s ease, transform 0.28s ease;
+    }
+    .slide.exit-down {
+      opacity: 0; transform: translateY(45px);
+      pointer-events: none;
+      transition: opacity 0.28s ease, transform 0.28s ease;
+    }
+
+    /* welcome */
+    .logo {
+      font-size: 0.72rem; font-weight: 600;
+      letter-spacing: 0.22em; text-transform: uppercase;
+      color: var(--dim); margin-bottom: 2.5rem;
+    }
+    .welcome h1 {
+      font-size: clamp(2rem, 5.5vw, 3.2rem);
+      font-weight: 300; line-height: 1.18;
+      letter-spacing: -0.02em;
+      margin-bottom: 1.2rem;
+    }
+    .welcome p {
+      font-size: 1rem; color: var(--dim);
+      line-height: 1.7; margin-bottom: 2.8rem;
+      font-weight: 300;
+    }
+
+    /* question */
+    .q-section {
+      font-size: 0.68rem; font-weight: 500;
+      letter-spacing: 0.18em; text-transform: uppercase;
+      color: var(--dim); margin-bottom: 0.6rem;
+    }
+    .q-num {
+      font-size: 0.82rem; color: var(--dim);
+      margin-bottom: 0.35rem;
+    }
+    .q-text {
+      font-size: clamp(1.4rem, 3.5vw, 2rem);
+      font-weight: 300; line-height: 1.32;
+      letter-spacing: -0.01em;
+      margin-bottom: 0.5rem;
+    }
+    .q-star { color: #fff; }
+    .q-hint {
+      font-size: 0.845rem; color: var(--dim);
+      line-height: 1.6; margin-bottom: 1.8rem;
+    }
+
+    /* inputs */
+    .input-line {
+      width: 100%; background: transparent; border: none;
+      border-bottom: 1px solid var(--border);
+      color: #fff; caret-color: #fff;
+      font-family: 'Inter', sans-serif;
+      font-size: 1.1rem; font-weight: 300;
+      padding: 0.6rem 0; outline: none;
+      transition: border-color 0.2s;
+    }
+    .input-line:focus { border-bottom-color: rgba(255,255,255,0.6); }
+    .input-line::placeholder { color: rgba(255,255,255,0.18); }
+    textarea.input-line { resize: none; line-height: 1.65; min-height: 80px; }
+
+    /* radio */
+    .opts { display: flex; flex-direction: column; gap: 0.4rem; margin-bottom: 1.2rem; }
+    .opt {
+      display: flex; align-items: center; gap: 0.85rem;
+      padding: 0.65rem 0.9rem;
+      border: 1px solid var(--border);
+      cursor: pointer; user-select: none;
+      transition: background 0.15s, border-color 0.15s;
+    }
+    .opt:hover { background: var(--hover-bg); border-color: rgba(255,255,255,0.3); }
+    .opt.selected { background: var(--sel-bg); border-color: rgba(255,255,255,0.55); }
+    .opt-key {
+      font-size: 0.63rem; font-weight: 600; color: var(--dim);
+      border: 1px solid var(--border);
+      width: 19px; height: 19px; min-width: 19px;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .opt.selected .opt-key { color: #fff; border-color: rgba(255,255,255,0.5); }
+    .opt-text { font-size: 0.9rem; font-weight: 300; }
+
+    /* checkbox */
+    .chk-scroll { max-height: 300px; overflow-y: auto; padding-right: 4px; margin-bottom: 1rem; }
+    .chk-scroll::-webkit-scrollbar { width: 2px; }
+    .chk-scroll::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.15); }
+    .chk-list { display: flex; flex-direction: column; gap: 0.38rem; }
+    .chk {
+      display: flex; align-items: flex-start; gap: 0.85rem;
+      padding: 0.6rem 0.9rem;
+      border: 1px solid var(--border);
+      cursor: pointer; user-select: none;
+      transition: background 0.15s, border-color 0.15s;
+    }
+    .chk:hover { background: var(--hover-bg); border-color: rgba(255,255,255,0.3); }
+    .chk.selected { background: var(--sel-bg); border-color: rgba(255,255,255,0.55); }
+    .chk-box {
+      width: 17px; height: 17px; min-width: 17px; margin-top: 2px;
+      border: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: center;
+      transition: all 0.15s;
+    }
+    .chk.selected .chk-box { border-color: #fff; background: #fff; }
+    .chk-check { font-size: 0.6rem; font-weight: 700; color: #000; opacity: 0; transition: opacity 0.12s; }
+    .chk.selected .chk-check { opacity: 1; }
+    .chk-text { font-size: 0.875rem; font-weight: 300; line-height: 1.45; }
+    .sel-count { font-size: 0.75rem; color: var(--dim); margin-bottom: 0.7rem; }
+    .sel-count b { color: #fff; }
+    .outro-field { display: none; padding-left: 2.4rem; margin-top: 0.3rem; }
+    .outro-field input {
+      width: 100%; background: transparent; border: none;
+      border-bottom: 1px solid var(--border);
+      color: #fff; font-family: 'Inter', sans-serif;
+      font-size: 0.875rem; font-weight: 300;
+      padding: 0.28rem 0; outline: none;
+    }
+    .outro-field input:focus { border-bottom-color: rgba(255,255,255,0.5); }
+    .outro-field input::placeholder { color: rgba(255,255,255,0.2); }
+
+    /* button */
+    .btn {
+      display: inline-flex; align-items: center; gap: 0.5rem;
+      padding: 0.8rem 1.8rem;
+      background: #fff; color: #000;
+      font-family: 'Inter', sans-serif; font-size: 0.8rem;
+      font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase;
+      border: none; cursor: pointer;
+      transition: background 0.2s, transform 0.15s;
+    }
+    .btn:hover { background: #e0e0e0; transform: translateY(-1px); }
+
+    /* continuar button */
+    .btn-continue {
+      display: inline-flex; align-items: center; gap: 0.45rem;
+      margin-top: 1.4rem;
+      padding: 0.7rem 1.6rem;
+      background: #fff; color: #000;
+      font-family: 'Inter', sans-serif; font-size: 0.8rem;
+      font-weight: 600; letter-spacing: 0.07em; text-transform: uppercase;
+      border: none; cursor: pointer;
+      transition: background 0.2s, transform 0.15s;
+    }
+    .btn-continue:hover { background: #e0e0e0; transform: translateY(-1px); }
+
+    /* key hint */
+    .key-hint {
+      margin-top: 1.3rem; font-size: 0.75rem; color: var(--dim);
+      display: flex; align-items: center; gap: 0.4rem;
+    }
+    kbd {
+      display: inline-flex; align-items: center; justify-content: center;
+      padding: 0.1rem 0.35rem;
+      border: 1px solid rgba(255,255,255,0.2);
+      font-family: 'Inter', sans-serif; font-size: 0.67rem;
+      color: var(--dim); border-radius: 2px;
+    }
+
+    /* error */
+    .err-msg { font-size: 0.78rem; color: var(--err); margin-top: 0.5rem; display: none; }
+    .err-msg.show { display: block; }
+
+    /* closing */
+    .closing .tag {
+      font-size: 0.68rem; font-weight: 500;
+      letter-spacing: 0.18em; text-transform: uppercase;
+      color: var(--dim); margin-bottom: 1.2rem;
+    }
+    .closing h2 {
+      font-size: clamp(1.8rem, 4.5vw, 3rem);
+      font-weight: 300; line-height: 1.2;
+      letter-spacing: -0.02em; margin-bottom: 1.4rem;
+    }
+    .closing p { font-size: 0.975rem; color: var(--dim); line-height: 1.8; font-weight: 300; }
+    .closing .sig {
+      margin-top: 2.2rem; font-size: 1.15rem;
+      font-weight: 300; font-style: italic; color: rgba(255,255,255,0.7);
+    }
+
+    /* bottom UI */
+    #counter {
+      position: fixed; bottom: 1.8rem; left: 2rem;
+      font-size: 0.73rem; color: var(--dim); z-index: 200;
+    }
+    #nav-btns {
+      position: fixed; bottom: 1.7rem; right: 2rem;
+      display: flex; gap: 0.4rem; z-index: 200;
+    }
+    .nav-btn {
+      width: 36px; height: 36px;
+      border: 1px solid var(--border);
+      background: transparent; color: var(--dim);
+      cursor: pointer; display: flex; align-items: center;
+      justify-content: center; font-size: 0.9rem;
+      transition: border-color 0.2s, color 0.2s;
+    }
+    .nav-btn:hover:not(:disabled) { border-color: rgba(255,255,255,0.5); color: #fff; }
+    .nav-btn:disabled { opacity: 0.2; cursor: not-allowed; }
+
+    @media (max-width: 600px) {
+      #counter { left: 1.2rem; }
+      #nav-btns { right: 1.2rem; }
+    }
+  </style>
+</head>
+
+<body>
+  <div id="progress-bar"><div id="progress-fill"></div></div>
+  <div id="form-wrap"></div>
+  <div id="counter"></div>
+  <div id="nav-btns">
+    <button class="nav-btn" id="btn-prev" onclick="go(-1)">↑</button>
+    <button class="nav-btn" id="btn-next" onclick="go(1)">↓</button>
+  </div>
+
+<script>
+const QUESTIONS = [
+  { id:1,  sec:"Dados básicos",            text:"Seu nome completo",                                          type:"text",     req:true  },
+  { id:2,  sec:"Dados básicos",            text:"E-mail de compra",                                          type:"email",    req:true  },
+  { id:3,  sec:"Dados básicos",            text:"WhatsApp",                                                   type:"tel",      req:true  },
+  { id:4,  sec:"Dados básicos",            text:"@ do Instagram",                                            type:"text",     req:true,  ph:"@seuinstagram" },
+  { id:5,  sec:"Sobre você e seu negócio", text:"O que você faz?",                                           type:"text",     hint:"Uma frase. Ex: Empresário no ramo de saúde / Líder comercial em indústria" },
+  { id:6,  sec:"Sobre você e seu negócio", text:"Há quanto tempo você trabalha com isso?",                   type:"radio",    opts:["Menos de 1 ano","1 a 3 anos","3 a 5 anos","5 a 10 anos","Mais de 10 anos"] },
+  { id:7,  sec:"Sobre você e seu negócio", text:"Qual o tamanho da sua empresa hoje?",                       type:"text",     hint:"Faturamento mensal ou número de funcionários — o que preferir compartilhar" },
+  { id:8,  sec:"Sobre você e seu negócio", text:"Quantas pessoas você lidera ou tem no seu time?",           type:"radio",    opts:["Só eu","2 a 5","6 a 15","16 a 50","Mais de 50"] },
+  { id:9,  sec:"Sobre IA",                 text:"Como a IA está inserida no seu dia a dia hoje?",            type:"textarea", req:true  },
+  { id:10, sec:"Sobre IA",                 text:"Qual seu nível de maturidade com IA?",                      type:"radio",    req:true, opts:["Nunca usei","Uso pontualmente","Uso com frequência","Já implementei no meu negócio"] },
+  { id:11, sec:"Sobre IA",                 text:"Quais ferramentas de IA você já usa ou já tentou usar?",    type:"text",     hint:"Ex: ChatGPT, Claude, Make, n8n, outros" },
+  { id:12, sec:"Sobre IA",                 text:"Quais são seus maiores travamentos agora?",                 type:"checkbox", req:true, hint:"Selecione 3 a 4",
+    opts:["Não sei por onde começar com IA","Sei usar, mas não consigo aplicar no meu negócio","Falta de tempo para aprender e implementar","Meu time não adota as ferramentas","Não sei quais processos automatizar","Tenho medo de depender de tecnologia que não entendo","Não consigo medir se a IA está gerando resultado","Outro"] },
+  { id:13, sec:"Intenção e expectativa",   text:"O que você vende ou entrega hoje?",                         type:"textarea", hint:"Descreva brevemente suas ofertas ou serviços." },
+  { id:14, sec:"Intenção e expectativa",   text:"Se eu pudesse resolver UM problema pra você nos próximos 30 dias, qual seria?", type:"textarea", hint:"Seja específico. Quanto mais claro, mais consigo te ajudar." },
+  { id:15, sec:"Intenção e expectativa",   text:"Daqui a 8 semanas, o que significa sucesso pra você?",      type:"textarea", hint:"O que você quer ter implementado, automatizado ou resolvido? Seja específico." },
+  { id:16, sec:"Intenção e expectativa",   text:"O que te fez entrar na mentoria?",                          type:"textarea" },
+  { id:17, sec:"Intenção e expectativa",   text:"Tem algo que você gostaria que eu soubesse sobre você antes de começar?", type:"textarea", hint:"Opcional. Mas se tiver algo relevante, me conta aqui." },
+];
+
+const KEYS = 'ABCDEFGHIJKLMNOP';
+const answers = {};
+const chkState = {};
+let cur = 0;
+const TOTAL = QUESTIONS.length + 2;
+
+function buildSlides() {
+  const wrap = document.getElementById('form-wrap');
+
+  wrap.appendChild(makeSlide('slide-0', 'slide welcome', `
+    <div class="logo">Winner.AI</div>
+    <h1>Onboarding:<br>Mentoria de IA</h1>
+    <p>Leva 4 minutos.<br>Me ajuda a personalizar sua jornada nas próximas 8 semanas.</p>
+    <button class="btn" onclick="go(1)">Começar →</button>
+  `));
+
+  QUESTIONS.forEach((q, i) => {
+    const star = q.req ? `<span class="q-star"> *</span>` : '';
+    const hint = q.hint ? `<div class="q-hint">${q.hint}</div>` : '';
+    let body = '';
+
+    if (q.type === 'text' || q.type === 'email' || q.type === 'tel') {
+      body = `
+        <input class="input-line" id="inp-${q.id}" type="${q.type}"
+          placeholder="${q.ph || 'Sua resposta...'}" autocomplete="off"
+          oninput="answers[${q.id}]=this.value"
+          onkeydown="if(event.key==='Enter'){event.preventDefault();go(1)}" />
+        <div class="err-msg" id="err-${q.id}">Por favor, preencha este campo.</div>
+        <button class="btn-continue" onclick="go(1)">Continuar →</button>`;
+    } else if (q.type === 'textarea') {
+      body = `
+        <textarea class="input-line" id="inp-${q.id}" rows="3"
+          placeholder="Sua resposta..."
+          oninput="answers[${q.id}]=this.value"
+          onkeydown="if(event.key==='Enter'&&event.ctrlKey){event.preventDefault();go(1)}"></textarea>
+        <div class="err-msg" id="err-${q.id}">Por favor, preencha este campo.</div>
+        <button class="btn-continue" onclick="go(1)">Continuar →</button>`;
+    } else if (q.type === 'radio') {
+      const opts = q.opts.map((o,j) => `
+        <div class="opt" id="opt-${q.id}-${j}" onclick="pickRadio(${q.id},${j})">
+          <span class="opt-key">${KEYS[j]}</span>
+          <span class="opt-text">${o}</span>
+        </div>`).join('');
+      body = `<div class="opts">${opts}</div>
+        <div class="err-msg" id="err-${q.id}">Por favor, selecione uma opção.</div>`;
+    } else if (q.type === 'checkbox') {
+      const items = q.opts.map((o,j) => {
+        const isOutro = o === 'Outro';
+        return `
+          <div class="chk" id="chk-${q.id}-${j}" onclick="toggleChk(${q.id},${j},${isOutro})">
+            <div class="chk-box"><span class="chk-check">✓</span></div>
+            <span class="chk-text">${o}</span>
+          </div>
+          ${isOutro ? `<div class="outro-field" id="outro-wrap-${q.id}">
+            <input type="text" id="outro-${q.id}" placeholder="Descreva..."
+              oninput="updateOutro(${q.id},this.value)" onclick="event.stopPropagation()" />
+          </div>` : ''}`;
+      }).join('');
+      body = `
+        <div class="sel-count" id="cnt-${q.id}">Selecionados: <b>0</b></div>
+        <div class="chk-scroll"><div class="chk-list">${items}</div></div>
+        <div class="err-msg" id="err-${q.id}">Selecione pelo menos 3 opções.</div>
+        <button class="btn-continue" style="margin-top:.75rem" onclick="go(1)">Continuar →</button>`;
+    }
+
+    wrap.appendChild(makeSlide(`slide-${i+1}`, 'slide', `
+      <div class="q-section">${q.sec}</div>
+      <div class="q-num">${String(q.id).padStart(2,'0')} →</div>
+      <div class="q-text">${q.text}${star}</div>
+      ${hint}${body}
+    `));
+  });
+
+  wrap.appendChild(makeSlide(`slide-${QUESTIONS.length+1}`, 'slide closing', `
+    <div class="tag">Concluído</div>
+    <h2>Você concluiu.<br>Obrigado.</h2>
+    <p>Nas próximas 8 semanas, vamos transformar o que você respondeu aqui em resultado real.</p>
+    <p style="margin-top:.9rem">Conte comigo.</p>
+    <div class="sig">— Lucas</div>
+  `));
+}
+
+function makeSlide(id, cls, html) {
+  const d = document.createElement('div');
+  d.id = id; d.className = cls; d.innerHTML = html;
+  return d;
+}
+
+function pickRadio(qId, idx) {
+  const q = QUESTIONS.find(q=>q.id===qId);
+  q.opts.forEach((_,j) => {
+    const el = document.getElementById(`opt-${qId}-${j}`);
+    if (el) el.classList.toggle('selected', j===idx);
+  });
+  answers[qId] = q.opts[idx];
+  setTimeout(()=>go(1), 360);
+}
+
+function toggleChk(qId, idx, isOutro) {
+  if (!chkState[qId]) chkState[qId] = new Set();
+  const s = chkState[qId];
+  const el = document.getElementById(`chk-${qId}-${idx}`);
+  if (s.has(idx)) { s.delete(idx); el.classList.remove('selected'); }
+  else            { s.add(idx);    el.classList.add('selected'); }
+  if (isOutro) {
+    const wrap = document.getElementById(`outro-wrap-${qId}`);
+    if (wrap) wrap.style.display = s.has(idx) ? 'block' : 'none';
+  }
+  const cnt = document.querySelector(`#cnt-${qId} b`);
+  if (cnt) cnt.textContent = s.size;
+  refreshChkAnswer(qId);
+}
+
+function updateOutro(qId) { refreshChkAnswer(qId); }
+
+function refreshChkAnswer(qId) {
+  const q = QUESTIONS.find(q=>q.id===qId);
+  const s = chkState[qId] || new Set();
+  answers[qId] = [...s].map(j => {
+    if (q.opts[j]==='Outro') {
+      const v = document.getElementById(`outro-${qId}`);
+      return v && v.value ? `Outro: ${v.value}` : 'Outro';
+    }
+    return q.opts[j];
+  });
+}
+
+function validate(idx) {
+  if (idx === 0 || idx === QUESTIONS.length+1) return true;
+  const q = QUESTIONS[idx-1];
+  if (!q.req) return true;
+  const err = document.getElementById(`err-${q.id}`);
+  let ok = false;
+  if (q.type==='text'||q.type==='email'||q.type==='tel'||q.type==='textarea') {
+    ok = !!(answers[q.id]||'').trim();
+  } else if (q.type==='radio') {
+    ok = answers[q.id] !== undefined;
+  } else if (q.type==='checkbox') {
+    ok = (chkState[q.id]||new Set()).size >= 3;
+  }
+  if (err) err.classList.toggle('show', !ok);
+  return ok;
+}
+
+function go(dir) {
+  if (!validate(cur)) return;
+  const next = cur + dir;
+  if (next < 0 || next >= TOTAL) return;
+
+  const fromEl = document.getElementById(`slide-${cur}`);
+  const toEl   = document.getElementById(`slide-${next}`);
+  if (!fromEl || !toEl) return;
+
+  fromEl.classList.remove('active');
+  fromEl.classList.add(dir > 0 ? 'exit-up' : 'exit-down');
+  setTimeout(() => fromEl.classList.remove('exit-up','exit-down'), 350);
+
+  toEl.classList.remove('active','exit-up','exit-down','from-below','from-above');
+  toEl.classList.add(dir > 0 ? 'from-below' : 'from-above');
+  void toEl.offsetHeight;
+  toEl.classList.remove('from-below','from-above');
+  toEl.classList.add('active');
+
+  cur = next;
+  refreshUI();
+
+  setTimeout(() => {
+    if (cur > 0 && cur <= QUESTIONS.length) {
+      const inp = document.getElementById(`inp-${QUESTIONS[cur-1].id}`);
+      if (inp) inp.focus();
+    }
+  }, 120);
+}
+
+function refreshUI() {
+  document.getElementById('progress-fill').style.width = (cur / (TOTAL-1) * 100) + '%';
+  document.getElementById('counter').textContent =
+    (cur > 0 && cur <= QUESTIONS.length) ? `${cur} / ${QUESTIONS.length}` : '';
+  document.getElementById('btn-prev').disabled = cur === 0;
+  document.getElementById('btn-next').disabled = cur === TOTAL-1;
+}
+
+document.addEventListener('keydown', e => {
+  const tag = document.activeElement?.tagName;
+  const isInput = tag === 'INPUT' || tag === 'TEXTAREA';
+  if (e.key==='ArrowUp' && !isInput) { e.preventDefault(); go(-1); }
+  if (e.key==='ArrowDown' && !isInput) { e.preventDefault(); go(1); }
+  if (cur > 0 && cur <= QUESTIONS.length) {
+    const q = QUESTIONS[cur-1];
+    if (q.type==='radio' && !isInput) {
+      const idx = KEYS.indexOf(e.key.toUpperCase());
+      if (idx >= 0 && idx < q.opts.length) pickRadio(q.id, idx);
+    }
+  }
+});
+
+buildSlides();
+document.getElementById('slide-0').classList.add('active');
+refreshUI();
+</script>
+</body>
+</html>
