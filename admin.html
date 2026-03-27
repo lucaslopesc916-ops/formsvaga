@@ -3,20 +3,24 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Admin · Respostas — Winner.AI</title>
+  <title>Admin · Winner.AI</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     :root {
-      --bg:      #000;
-      --surface: #0f0f0f;
-      --border:  rgba(255,255,255,0.1);
-      --text:    #fff;
-      --dim:     rgba(255,255,255,0.42);
-      --hover:   rgba(255,255,255,0.05);
+      --bg:       #000;
+      --surface:  #0d0d0d;
+      --border:   rgba(255,255,255,0.09);
+      --border2:  rgba(255,255,255,0.18);
+      --text:     #fff;
+      --dim:      rgba(255,255,255,0.42);
+      --dim2:     rgba(255,255,255,0.22);
+      --hover:    rgba(255,255,255,0.05);
+      --err:      #ff5c5c;
     }
 
     body {
@@ -26,169 +30,185 @@
       min-height: 100vh;
     }
 
-    /* ── password screen ── */
+    /* ── password ── */
     #pw-screen {
-      position: fixed; inset: 0;
-      display: flex; align-items: center; justify-content: center;
-      background: var(--bg); z-index: 100;
+      position: fixed; inset: 0; background: var(--bg);
+      display: flex; align-items: center; justify-content: center; z-index: 100;
     }
     #pw-screen.hidden { display: none; }
-    .pw-box { width: 100%; max-width: 360px; padding: 2rem; }
-    .pw-box .logo {
-      font-size: 0.7rem; font-weight: 600;
-      letter-spacing: 0.22em; text-transform: uppercase;
-      color: var(--dim); margin-bottom: 2.5rem;
+    .pw-box { width: 100%; max-width: 340px; padding: 2rem; }
+    .pw-logo {
+      font-size: 0.7rem; font-weight: 600; letter-spacing: 0.22em;
+      text-transform: uppercase; color: var(--dim); margin-bottom: 2.5rem;
     }
-    .pw-box h2 { font-size: 1.5rem; font-weight: 300; margin-bottom: 0.4rem; }
+    .pw-box h2 { font-size: 1.4rem; font-weight: 300; margin-bottom: 0.4rem; }
     .pw-box p  { font-size: 0.85rem; color: var(--dim); margin-bottom: 2rem; }
     .pw-input {
       width: 100%; background: transparent; border: none;
-      border-bottom: 1px solid var(--border);
-      color: var(--text); caret-color: #fff;
-      font-family: 'Inter', sans-serif; font-size: 1rem;
-      padding: 0.6rem 0; outline: none;
+      border-bottom: 1px solid var(--border2); color: var(--text);
+      caret-color: #fff; font-family: 'Inter', sans-serif;
+      font-size: 1rem; padding: 0.6rem 0; outline: none;
       transition: border-color 0.2s; margin-bottom: 0.5rem;
     }
-    .pw-input:focus { border-bottom-color: rgba(255,255,255,0.5); }
-    .pw-err { font-size: 0.78rem; color: #ff5c5c; min-height: 1rem; margin-bottom: 1rem; }
+    .pw-input:focus { border-bottom-color: rgba(255,255,255,0.55); }
+    .pw-err { font-size: 0.78rem; color: var(--err); min-height: 1.2rem; margin-bottom: 1rem; }
     .pw-btn {
-      width: 100%; padding: 0.75rem;
-      background: #fff; color: #000;
-      font-family: 'Inter', sans-serif; font-size: 0.8rem;
-      font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase;
+      width: 100%; padding: 0.75rem; background: #fff; color: #000;
+      font-family: 'Inter', sans-serif; font-size: 0.8rem; font-weight: 600;
+      letter-spacing: 0.08em; text-transform: uppercase;
       border: none; cursor: pointer; transition: background 0.2s;
     }
     .pw-btn:hover { background: #e0e0e0; }
 
-    /* ── main layout ── */
+    /* ── app ── */
     #app { display: none; }
     #app.visible { display: block; }
 
+    /* ── header ── */
     header {
       border-bottom: 1px solid var(--border);
-      padding: 1.25rem 2rem;
+      padding: 1.1rem 2rem;
       display: flex; align-items: center; justify-content: space-between;
-      position: sticky; top: 0; background: var(--bg); z-index: 10;
+      position: sticky; top: 0; background: var(--bg); z-index: 50;
     }
-    .header-left { display: flex; align-items: center; gap: 1.5rem; }
-    .h-logo {
+    .h-brand {
       font-size: 0.7rem; font-weight: 600;
       letter-spacing: 0.22em; text-transform: uppercase; color: var(--dim);
     }
-    #total-badge {
-      font-size: 0.75rem; color: var(--dim);
-      border: 1px solid var(--border);
-      padding: 0.2rem 0.6rem;
+    .tabs { display: flex; gap: 0; }
+    .tab {
+      font-size: 0.8rem; font-weight: 500;
+      padding: 0.5rem 1.2rem;
+      cursor: pointer; border: 1px solid transparent;
+      color: var(--dim); transition: all 0.15s; user-select: none;
     }
+    .tab.active { color: #fff; border-color: var(--border2); }
+    .tab:hover:not(.active) { color: rgba(255,255,255,0.7); }
+    #refresh-btn {
+      font-size: 0.75rem; color: var(--dim); background: transparent;
+      border: 1px solid var(--border); padding: 0.35rem 0.8rem;
+      cursor: pointer; font-family: 'Inter', sans-serif;
+      transition: border-color 0.2s, color 0.2s;
+    }
+    #refresh-btn:hover { border-color: var(--border2); color: #fff; }
+
+    /* ── pages ── */
+    .page { display: none; }
+    .page.active { display: block; }
+
+    /* ── dashboard ── */
+    #dashboard { max-width: 1100px; margin: 0 auto; padding: 2rem 2rem 4rem; }
+
+    /* stat cards */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 0.75rem; margin-bottom: 2rem;
+    }
+    .stat-card {
+      border: 1px solid var(--border);
+      padding: 1.4rem 1.5rem;
+    }
+    .stat-label {
+      font-size: 0.68rem; font-weight: 500;
+      letter-spacing: 0.18em; text-transform: uppercase;
+      color: var(--dim); margin-bottom: 0.7rem;
+    }
+    .stat-value {
+      font-size: 2rem; font-weight: 300; line-height: 1;
+      letter-spacing: -0.02em;
+    }
+    .stat-sub {
+      font-size: 0.78rem; color: var(--dim);
+      margin-top: 0.4rem; font-weight: 300;
+    }
+
+    /* charts grid */
+    .charts-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(460px, 1fr));
+      gap: 0.75rem;
+    }
+    .chart-card {
+      border: 1px solid var(--border);
+      padding: 1.5rem;
+    }
+    .chart-title {
+      font-size: 0.68rem; font-weight: 500;
+      letter-spacing: 0.18em; text-transform: uppercase;
+      color: var(--dim); margin-bottom: 1.4rem;
+    }
+    .chart-wrap { position: relative; }
+
+    /* ── responses page ── */
+    #responses-page { max-width: 860px; margin: 0 auto; padding: 2rem 2rem 4rem; }
+    .search-row {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 1.5rem; gap: 1rem;
+    }
+    .res-count { font-size: 0.8rem; color: var(--dim); white-space: nowrap; }
     #search {
       background: transparent; border: 1px solid var(--border);
       color: var(--text); font-family: 'Inter', sans-serif;
       font-size: 0.85rem; padding: 0.45rem 0.85rem;
-      outline: none; width: 220px;
-      transition: border-color 0.2s;
+      outline: none; width: 240px; transition: border-color 0.2s;
     }
-    #search:focus { border-color: rgba(255,255,255,0.4); }
-    #search::placeholder { color: var(--dim); }
+    #search:focus { border-color: var(--border2); }
+    #search::placeholder { color: var(--dim2); }
 
-    /* ── list ── */
-    #list { max-width: 860px; margin: 2rem auto; padding: 0 2rem 4rem; }
-
-    .empty {
-      text-align: center; padding: 5rem 2rem;
-      color: var(--dim); font-size: 0.9rem; font-weight: 300;
-    }
-
-    /* ── card ── */
-    .card {
-      border: 1px solid var(--border);
-      margin-bottom: 0.6rem;
-      transition: border-color 0.15s;
-    }
-    .card:hover { border-color: rgba(255,255,255,0.25); }
-
+    /* cards */
+    .card { border: 1px solid var(--border); margin-bottom: 0.55rem; transition: border-color 0.15s; }
+    .card:hover { border-color: rgba(255,255,255,0.2); }
     .card-header {
-      display: flex; align-items: center;
-      padding: 1rem 1.25rem;
-      cursor: pointer; user-select: none;
-      gap: 1.2rem;
+      display: flex; align-items: center; padding: 1rem 1.25rem;
+      cursor: pointer; user-select: none; gap: 1rem;
     }
-    .card-num {
-      font-size: 0.72rem; color: var(--dim);
-      width: 28px; flex-shrink: 0;
-    }
-    .card-name { font-size: 0.95rem; font-weight: 500; flex: 1; }
+    .card-num { font-size: 0.7rem; color: var(--dim); width: 26px; flex-shrink: 0; }
+    .card-name { font-size: 0.92rem; font-weight: 500; flex: 1; min-width: 0; }
     .card-meta {
-      font-size: 0.78rem; color: var(--dim);
+      font-size: 0.77rem; color: var(--dim);
       display: flex; gap: 1.2rem; flex-shrink: 0;
     }
-    .card-date { font-size: 0.75rem; color: var(--dim); }
-    .card-chevron {
-      font-size: 0.75rem; color: var(--dim);
-      transition: transform 0.2s; flex-shrink: 0;
-    }
-    .card.open .card-chevron { transform: rotate(180deg); }
-
-    /* ── expanded body ── */
-    .card-body {
-      display: none;
-      border-top: 1px solid var(--border);
-      padding: 1.5rem 1.25rem 1.5rem 3.4rem;
-    }
+    .card-date { font-size: 0.73rem; color: var(--dim2); white-space: nowrap; }
+    .chevron { font-size: 0.7rem; color: var(--dim); transition: transform 0.2s; flex-shrink: 0; }
+    .card.open .chevron { transform: rotate(180deg); }
+    .card-body { display: none; border-top: 1px solid var(--border); padding: 1.5rem 1.25rem 1.5rem 3.2rem; }
     .card.open .card-body { display: block; }
-
     .sections { display: flex; flex-direction: column; gap: 1.8rem; }
-
     .sec-title {
-      font-size: 0.65rem; font-weight: 600;
-      letter-spacing: 0.2em; text-transform: uppercase;
-      color: var(--dim); margin-bottom: 0.9rem;
-      padding-bottom: 0.5rem;
+      font-size: 0.63rem; font-weight: 600; letter-spacing: 0.2em;
+      text-transform: uppercase; color: var(--dim);
+      margin-bottom: 0.85rem; padding-bottom: 0.5rem;
       border-bottom: 1px solid var(--border);
     }
+    .fields { display: flex; flex-direction: column; gap: 0.8rem; }
+    .field-row { display: grid; grid-template-columns: 190px 1fr; gap: 0.75rem; }
+    .field-label { font-size: 0.77rem; color: var(--dim); line-height: 1.5; padding-top: 1px; }
+    .field-val { font-size: 0.875rem; font-weight: 300; line-height: 1.6; }
+    .field-empty { font-size: 0.875rem; color: var(--dim2); font-style: italic; }
+    .chips { display: flex; flex-wrap: wrap; gap: 0.3rem; }
+    .chip { font-size: 0.73rem; padding: 0.2rem 0.6rem; border: 1px solid var(--border); font-weight: 300; }
 
-    .fields { display: flex; flex-direction: column; gap: 0.85rem; }
-    .field-row { display: grid; grid-template-columns: 180px 1fr; gap: 0.75rem; }
-    .field-label {
-      font-size: 0.78rem; color: var(--dim);
-      font-weight: 400; padding-top: 1px; line-height: 1.5;
-    }
-    .field-val {
-      font-size: 0.88rem; font-weight: 300;
-      line-height: 1.6; color: var(--text);
-    }
-    .field-val.empty-val { color: rgba(255,255,255,0.2); font-style: italic; }
+    .empty-state { text-align: center; padding: 5rem 2rem; color: var(--dim); font-size: 0.88rem; font-weight: 300; }
 
-    /* chips for travamentos */
-    .chips { display: flex; flex-wrap: wrap; gap: 0.35rem; }
-    .chip {
-      font-size: 0.75rem; padding: 0.22rem 0.65rem;
-      border: 1px solid var(--border);
-      color: var(--text); font-weight: 300;
-    }
-
-    /* loading */
-    #loading {
-      text-align: center; padding: 4rem;
-      color: var(--dim); font-size: 0.85rem; font-weight: 300;
-    }
-
-    @media (max-width: 600px) {
-      header { flex-direction: column; gap: 1rem; align-items: flex-start; }
-      #search { width: 100%; }
-      .field-row { grid-template-columns: 1fr; gap: 0.2rem; }
-      .field-label { color: rgba(255,255,255,0.35); font-size: 0.73rem; }
+    @media (max-width: 700px) {
+      .charts-grid { grid-template-columns: 1fr; }
       .card-meta { display: none; }
+      .field-row { grid-template-columns: 1fr; gap: 0.15rem; }
+      .field-label { color: var(--dim2); font-size: 0.72rem; }
       .card-body { padding-left: 1.25rem; }
+      header { flex-wrap: wrap; gap: 0.75rem; }
+      #search { width: 100%; }
     }
   </style>
 </head>
 <body>
 
-<!-- password screen -->
+<!-- password -->
 <div id="pw-screen">
   <div class="pw-box">
-    <div class="logo">Winner.AI</div>
-    <h2>Painel de respostas</h2>
+    <div class="pw-logo">Winner.AI</div>
+    <h2>Painel admin</h2>
     <p>Acesso restrito</p>
     <input class="pw-input" id="pw-input" type="password" placeholder="Senha"
       onkeydown="if(event.key==='Enter') checkPw()" />
@@ -197,27 +217,100 @@
   </div>
 </div>
 
-<!-- main app -->
+<!-- app -->
 <div id="app">
   <header>
-    <div class="header-left">
-      <span class="h-logo">Winner.AI · Admin</span>
-      <span id="total-badge">— respostas</span>
+    <span class="h-brand">Winner.AI · Admin</span>
+    <div class="tabs">
+      <div class="tab active" onclick="showPage('dashboard')">Dashboard</div>
+      <div class="tab" onclick="showPage('responses')">Respostas</div>
     </div>
-    <input id="search" type="text" placeholder="Buscar por nome ou e-mail…" oninput="filterCards()" />
+    <button id="refresh-btn" onclick="loadData()">↻ Atualizar</button>
   </header>
-  <div id="list">
-    <div id="loading">Carregando…</div>
+
+  <!-- dashboard -->
+  <div id="dashboard" class="page active">
+    <div class="stats-grid" id="stats-grid">
+      <div class="stat-card"><div class="stat-label">Total de alunos</div><div class="stat-value" id="st-total">—</div></div>
+      <div class="stat-card"><div class="stat-label">Última resposta</div><div class="stat-value" id="st-last" style="font-size:1.2rem;padding-top:.5rem">—</div><div class="stat-sub" id="st-last-name"></div></div>
+      <div class="stat-card"><div class="stat-label">Maturidade mais comum</div><div class="stat-value" id="st-maturidade" style="font-size:1rem;padding-top:.5rem;line-height:1.3">—</div></div>
+      <div class="stat-card"><div class="stat-label">Travamento mais citado</div><div class="stat-value" id="st-travamento" style="font-size:0.9rem;padding-top:.5rem;line-height:1.4">—</div></div>
+    </div>
+
+    <div class="charts-grid">
+      <div class="chart-card">
+        <div class="chart-title">Maturidade com IA</div>
+        <div class="chart-wrap" style="height:220px">
+          <canvas id="chart-maturidade"></canvas>
+        </div>
+      </div>
+      <div class="chart-card">
+        <div class="chart-title">Maiores travamentos</div>
+        <div class="chart-wrap" style="height:220px">
+          <canvas id="chart-travamentos"></canvas>
+        </div>
+      </div>
+      <div class="chart-card">
+        <div class="chart-title">Tamanho do time</div>
+        <div class="chart-wrap" style="height:220px">
+          <canvas id="chart-time"></canvas>
+        </div>
+      </div>
+      <div class="chart-card">
+        <div class="chart-title">Tempo na área</div>
+        <div class="chart-wrap" style="height:220px">
+          <canvas id="chart-tempo"></canvas>
+        </div>
+      </div>
+      <div class="chart-card" style="grid-column: 1 / -1">
+        <div class="chart-title">Respostas ao longo do tempo</div>
+        <div class="chart-wrap" style="height:180px">
+          <canvas id="chart-timeline"></canvas>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- responses -->
+  <div id="responses-page" class="page">
+    <div class="search-row">
+      <span class="res-count" id="res-count">— respostas</span>
+      <input id="search" type="text" placeholder="Buscar por nome ou e-mail…" oninput="filterCards()" />
+    </div>
+    <div id="card-list"></div>
   </div>
 </div>
 
 <script>
 const SUPABASE_URL = 'https://errofscpxzcbhloutdpb.supabase.co';
 const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVycm9mc2NweHpjYmhsb3V0ZHBiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ1NTM1OTIsImV4cCI6MjA5MDEyOTU5Mn0.KLrdir04-WdKkSUYqCZvFeyB36qb2MyBX60szAXfWLI';
-const ADMIN_PASSWORD = 'winner2025'; // troque aqui
+const ADMIN_PASSWORD = 'winner2025';
 
 let allData = [];
+const charts = {};
 
+// ── chart defaults ──
+Chart.defaults.color = 'rgba(255,255,255,0.45)';
+Chart.defaults.font.family = 'Inter';
+Chart.defaults.font.size = 11;
+
+const gridColor = 'rgba(255,255,255,0.06)';
+const barColor  = 'rgba(255,255,255,0.85)';
+const barHover  = 'rgba(255,255,255,1)';
+
+function makeBarOpts(horizontal = false) {
+  return {
+    indexAxis: horizontal ? 'y' : 'x',
+    responsive: true, maintainAspectRatio: false,
+    plugins: { legend: { display: false } },
+    scales: {
+      x: { grid: { color: gridColor }, ticks: { color: 'rgba(255,255,255,0.4)' }, border: { color: gridColor } },
+      y: { grid: { color: gridColor }, ticks: { color: 'rgba(255,255,255,0.4)' }, border: { color: gridColor } }
+    }
+  };
+}
+
+// ── auth ──
 function checkPw() {
   const val = document.getElementById('pw-input').value;
   if (val === ADMIN_PASSWORD) {
@@ -231,26 +324,165 @@ function checkPw() {
   }
 }
 
+// ── data ──
 async function loadData() {
+  document.getElementById('refresh-btn').textContent = '↻ …';
   try {
     const res = await fetch(
       `${SUPABASE_URL}/rest/v1/mentoria_submissions?select=*&order=created_at.desc`,
-      { headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}` } }
+      { headers: { apikey: SUPABASE_KEY, Authorization: `Bearer ${SUPABASE_KEY}` } }
     );
     allData = await res.json();
-    render(allData);
-  } catch(e) {
-    document.getElementById('loading').textContent = 'Erro ao carregar dados.';
-  }
+    renderDashboard(allData);
+    renderCards(allData);
+  } catch(e) { console.error(e); }
+  document.getElementById('refresh-btn').textContent = '↻ Atualizar';
 }
 
-function render(data) {
-  const list = document.getElementById('list');
-  document.getElementById('total-badge').textContent =
-    `${data.length} resposta${data.length !== 1 ? 's' : ''}`;
+// ── page switch ──
+function showPage(name) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.getElementById(name === 'dashboard' ? 'dashboard' : 'responses-page').classList.add('active');
+  document.querySelectorAll('.tab')[name === 'dashboard' ? 0 : 1].classList.add('active');
+}
 
-  if (!data.length) {
-    list.innerHTML = '<div class="empty">Nenhuma resposta ainda.</div>';
+// ── dashboard ──
+function renderDashboard(data) {
+  if (!Array.isArray(data) || !data.length) return;
+
+  // stat cards
+  document.getElementById('st-total').textContent = data.length;
+
+  const last = data[0];
+  const lastDate = new Date(last.created_at);
+  document.getElementById('st-last').textContent =
+    lastDate.toLocaleDateString('pt-BR', { day:'2-digit', month:'short' }) + ' · ' +
+    lastDate.toLocaleTimeString('pt-BR', { hour:'2-digit', minute:'2-digit' });
+  document.getElementById('st-last-name').textContent = last.nome || '—';
+
+  // maturidade top
+  const matCount = count(data, 'maturidade_ia');
+  const topMat = topKey(matCount);
+  document.getElementById('st-maturidade').textContent = topMat || '—';
+
+  // travamento top
+  const travAll = [];
+  data.forEach(r => { if (r.travamentos) r.travamentos.split(' | ').forEach(t => travAll.push(t.trim())); });
+  const travCount = countArr(travAll);
+  const topTrav = topKey(travCount);
+  document.getElementById('st-travamento').textContent = topTrav || '—';
+
+  // ── chart: maturidade ──
+  const matLabels = ['Nunca usei','Uso pontualmente','Uso com frequência','Já implementei no meu negócio'];
+  const matVals   = matLabels.map(l => matCount[l] || 0);
+  buildBar('chart-maturidade', matLabels.map(l => l.replace('Já implementei no meu negócio','Já implementei')), matVals, false);
+
+  // ── chart: travamentos ──
+  const travSorted = Object.entries(travCount).sort((a,b) => b[1]-a[1]).slice(0,7);
+  const travLabels = travSorted.map(([k]) => truncate(k, 32));
+  const travVals   = travSorted.map(([,v]) => v);
+  buildBar('chart-travamentos', travLabels, travVals, true);
+
+  // ── chart: tamanho time ──
+  const timeLabels = ['Só eu','2 a 5','6 a 15','16 a 50','Mais de 50'];
+  const timeCount  = count(data, 'tamanho_time');
+  buildBar('chart-time', timeLabels, timeLabels.map(l => timeCount[l] || 0), false);
+
+  // ── chart: tempo na área ──
+  const tempoLabels = ['Menos de 1 ano','1 a 3 anos','3 a 5 anos','5 a 10 anos','Mais de 10 anos'];
+  const tempoCount  = count(data, 'tempo_trabalho');
+  buildBar('chart-tempo', tempoLabels.map(l => l.replace(' anos','a').replace(' ano','a')), tempoLabels.map(l => tempoCount[l] || 0), false);
+
+  // ── chart: timeline ──
+  buildTimeline(data);
+}
+
+function buildBar(id, labels, values, horizontal) {
+  if (charts[id]) charts[id].destroy();
+  const ctx = document.getElementById(id).getContext('2d');
+  const opts = makeBarOpts(horizontal);
+  if (horizontal) {
+    opts.scales.x.ticks.stepSize = 1;
+  } else {
+    opts.scales.y.ticks.stepSize = 1;
+  }
+  charts[id] = new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels,
+      datasets: [{ data: values, backgroundColor: barColor, hoverBackgroundColor: barHover, borderRadius: 0, borderSkipped: false }]
+    },
+    options: opts
+  });
+}
+
+function buildTimeline(data) {
+  // group by day
+  const byDay = {};
+  data.forEach(r => {
+    const d = r.created_at.slice(0,10);
+    byDay[d] = (byDay[d] || 0) + 1;
+  });
+  const sorted = Object.entries(byDay).sort((a,b)=>a[0].localeCompare(b[0]));
+  const labels = sorted.map(([d]) => {
+    const dt = new Date(d + 'T12:00:00');
+    return dt.toLocaleDateString('pt-BR', { day:'2-digit', month:'short' });
+  });
+  const values = sorted.map(([,v]) => v);
+
+  if (charts['chart-timeline']) charts['chart-timeline'].destroy();
+  const ctx = document.getElementById('chart-timeline').getContext('2d');
+  charts['chart-timeline'] = new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels,
+      datasets: [{
+        data: values,
+        borderColor: 'rgba(255,255,255,0.8)',
+        backgroundColor: 'rgba(255,255,255,0.04)',
+        pointBackgroundColor: '#fff',
+        pointRadius: 4,
+        pointHoverRadius: 6,
+        tension: 0.35,
+        fill: true,
+        borderWidth: 1.5
+      }]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: { legend: { display: false } },
+      scales: {
+        x: { grid: { color: gridColor }, ticks: { color: 'rgba(255,255,255,0.4)' }, border: { color: gridColor } },
+        y: { grid: { color: gridColor }, ticks: { color: 'rgba(255,255,255,0.4)', stepSize: 1 }, border: { color: gridColor }, min: 0 }
+      }
+    }
+  });
+}
+
+// ── helpers ──
+function count(data, field) {
+  const c = {};
+  data.forEach(r => { if (r[field]) c[r[field]] = (c[r[field]] || 0) + 1; });
+  return c;
+}
+function countArr(arr) {
+  const c = {};
+  arr.forEach(v => { c[v] = (c[v] || 0) + 1; });
+  return c;
+}
+function topKey(obj) {
+  return Object.entries(obj).sort((a,b)=>b[1]-a[1])[0]?.[0];
+}
+function truncate(s, n) { return s.length > n ? s.slice(0,n) + '…' : s; }
+
+// ── response cards ──
+function renderCards(data) {
+  const list = document.getElementById('card-list');
+  document.getElementById('res-count').textContent = `${data.length} resposta${data.length !== 1 ? 's' : ''}`;
+
+  if (!Array.isArray(data) || !data.length) {
+    list.innerHTML = '<div class="empty-state">Nenhuma resposta ainda.</div>';
     return;
   }
 
@@ -260,12 +492,12 @@ function render(data) {
     const timeStr = date.toLocaleTimeString('pt-BR', { hour:'2-digit', minute:'2-digit' });
 
     const chips = r.travamentos
-      ? r.travamentos.split(' | ').map(t => `<span class="chip">${t}</span>`).join('')
-      : '<span class="field-val empty-val">—</span>';
+      ? r.travamentos.split(' | ').map(t => `<span class="chip">${t.trim()}</span>`).join('')
+      : '<span class="field-empty">Não respondido</span>';
 
-    const v = (val) => val
+    const v = val => val
       ? `<span class="field-val">${val}</span>`
-      : `<span class="field-val empty-val">Não respondido</span>`;
+      : `<span class="field-empty">Não respondido</span>`;
 
     return `
     <div class="card" id="card-${i}">
@@ -277,18 +509,16 @@ function render(data) {
           <span>${r.whatsapp || '—'}</span>
         </span>
         <span class="card-date">${dateStr} · ${timeStr}</span>
-        <span class="card-chevron">▼</span>
+        <span class="chevron">▼</span>
       </div>
       <div class="card-body">
         <div class="sections">
-
           <div>
             <div class="sec-title">Dados básicos</div>
             <div class="fields">
               <div class="field-row"><span class="field-label">Instagram</span>${v(r.instagram)}</div>
             </div>
           </div>
-
           <div>
             <div class="sec-title">Sobre você e seu negócio</div>
             <div class="fields">
@@ -298,20 +528,15 @@ function render(data) {
               <div class="field-row"><span class="field-label">Tamanho do time</span>${v(r.tamanho_time)}</div>
             </div>
           </div>
-
           <div>
             <div class="sec-title">Sobre IA</div>
             <div class="fields">
               <div class="field-row"><span class="field-label">IA no dia a dia</span>${v(r.ia_dia_a_dia)}</div>
               <div class="field-row"><span class="field-label">Maturidade com IA</span>${v(r.maturidade_ia)}</div>
               <div class="field-row"><span class="field-label">Ferramentas usadas</span>${v(r.ferramentas_ia)}</div>
-              <div class="field-row">
-                <span class="field-label">Maiores travamentos</span>
-                <div class="chips">${chips}</div>
-              </div>
+              <div class="field-row"><span class="field-label">Maiores travamentos</span><div class="chips">${chips}</div></div>
             </div>
           </div>
-
           <div>
             <div class="sec-title">Intenção e expectativa</div>
             <div class="fields">
@@ -322,7 +547,6 @@ function render(data) {
               <div class="field-row"><span class="field-label">Info adicional</span>${v(r.info_adicional)}</div>
             </div>
           </div>
-
         </div>
       </div>
     </div>`;
@@ -339,10 +563,9 @@ function filterCards() {
     (r.nome  || '').toLowerCase().includes(q) ||
     (r.email || '').toLowerCase().includes(q)
   );
-  render(filtered);
+  renderCards(filtered);
 }
 
-// focus password input on load
 document.getElementById('pw-input').focus();
 </script>
 </body>
