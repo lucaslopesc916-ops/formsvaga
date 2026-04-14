@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Admin · Winner.AI</title>
+  <title>Admin · LLC Tech — Vaga Automacoes</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
@@ -99,7 +99,6 @@
     /* ── dashboard ── */
     #dashboard { max-width: 1100px; margin: 0 auto; padding: 2rem 2rem 4rem; }
 
-    /* stat cards */
     .stats-grid {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
@@ -123,7 +122,6 @@
       margin-top: 0.4rem; font-weight: 300;
     }
 
-    /* charts grid */
     .charts-grid {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(460px, 1fr));
@@ -156,7 +154,6 @@
     #search:focus { border-color: var(--border2); }
     #search::placeholder { color: var(--dim2); }
 
-    /* cards */
     .card { border: 1px solid var(--border); margin-bottom: 0.55rem; transition: border-color 0.15s, opacity 0.3s; }
     .card:hover { border-color: rgba(255,255,255,0.2); }
     .card.deleting { opacity: 0.3; pointer-events: none; }
@@ -215,63 +212,63 @@
 <!-- password -->
 <div id="pw-screen">
   <div class="pw-box">
-    <div class="pw-logo">Winner.AI</div>
+    <div class="pw-logo">LLC Tech</div>
     <h2>Painel admin</h2>
     <p>Acesso restrito</p>
     <input class="pw-input" id="pw-input" type="password" placeholder="Senha"
       onkeydown="if(event.key==='Enter') checkPw()" />
     <div class="pw-err" id="pw-err"></div>
-    <button class="pw-btn" onclick="checkPw()">Entrar →</button>
+    <button class="pw-btn" onclick="checkPw()">Entrar &rarr;</button>
   </div>
 </div>
 
 <!-- app -->
 <div id="app">
   <header>
-    <span class="h-brand">Winner.AI · Admin</span>
+    <span class="h-brand">LLC Tech &middot; Candidatos</span>
     <div class="tabs">
       <div class="tab active" onclick="showPage('dashboard')">Dashboard</div>
-      <div class="tab" onclick="showPage('responses')">Respostas</div>
+      <div class="tab" onclick="showPage('responses')">Candidaturas</div>
     </div>
-    <button id="refresh-btn" onclick="loadData()">↻ Atualizar</button>
+    <button id="refresh-btn" onclick="loadData()">&#8635; Atualizar</button>
   </header>
 
   <!-- dashboard -->
   <div id="dashboard" class="page active">
     <div class="stats-grid" id="stats-grid">
-      <div class="stat-card"><div class="stat-label">Total de alunos</div><div class="stat-value" id="st-total">—</div></div>
-      <div class="stat-card"><div class="stat-label">Última resposta</div><div class="stat-value" id="st-last" style="font-size:1.2rem;padding-top:.5rem">—</div><div class="stat-sub" id="st-last-name"></div></div>
-      <div class="stat-card"><div class="stat-label">Maturidade mais comum</div><div class="stat-value" id="st-maturidade" style="font-size:1rem;padding-top:.5rem;line-height:1.3">—</div></div>
-      <div class="stat-card"><div class="stat-label">Travamento mais citado</div><div class="stat-value" id="st-travamento" style="font-size:0.9rem;padding-top:.5rem;line-height:1.4">—</div></div>
+      <div class="stat-card"><div class="stat-label">Total de candidatos</div><div class="stat-value" id="st-total">&mdash;</div></div>
+      <div class="stat-card"><div class="stat-label">Ultima candidatura</div><div class="stat-value" id="st-last" style="font-size:1.2rem;padding-top:.5rem">&mdash;</div><div class="stat-sub" id="st-last-name"></div></div>
+      <div class="stat-card"><div class="stat-label">Nivel I.A. mais comum</div><div class="stat-value" id="st-nivel-ia" style="font-size:1rem;padding-top:.5rem;line-height:1.3">&mdash;</div></div>
+      <div class="stat-card"><div class="stat-label">Nivel dev mais comum</div><div class="stat-value" id="st-nivel-dev" style="font-size:0.9rem;padding-top:.5rem;line-height:1.4">&mdash;</div></div>
     </div>
 
     <div class="charts-grid">
       <div class="chart-card">
-        <div class="chart-title">Maturidade com IA</div>
+        <div class="chart-title">Nivel de I.A.</div>
         <div class="chart-wrap" style="height:220px">
-          <canvas id="chart-maturidade"></canvas>
+          <canvas id="chart-nivel-ia"></canvas>
         </div>
       </div>
       <div class="chart-card">
-        <div class="chart-title">Maiores travamentos</div>
+        <div class="chart-title">Ferramentas de automacao</div>
         <div class="chart-wrap" style="height:220px">
-          <canvas id="chart-travamentos"></canvas>
+          <canvas id="chart-ferramentas"></canvas>
         </div>
       </div>
       <div class="chart-card">
-        <div class="chart-title">Tamanho do time</div>
+        <div class="chart-title">Nivel de desenvolvimento</div>
         <div class="chart-wrap" style="height:220px">
-          <canvas id="chart-time"></canvas>
+          <canvas id="chart-nivel-dev"></canvas>
         </div>
       </div>
       <div class="chart-card">
-        <div class="chart-title">Tempo na área</div>
+        <div class="chart-title">Disponibilidade</div>
         <div class="chart-wrap" style="height:220px">
-          <canvas id="chart-tempo"></canvas>
+          <canvas id="chart-disponibilidade"></canvas>
         </div>
       </div>
       <div class="chart-card" style="grid-column: 1 / -1">
-        <div class="chart-title">Respostas ao longo do tempo</div>
+        <div class="chart-title">Candidaturas ao longo do tempo</div>
         <div class="chart-wrap" style="height:180px">
           <canvas id="chart-timeline"></canvas>
         </div>
@@ -282,8 +279,8 @@
   <!-- responses -->
   <div id="responses-page" class="page">
     <div class="search-row">
-      <span class="res-count" id="res-count">— respostas</span>
-      <input id="search" type="text" placeholder="Buscar por nome ou e-mail…" oninput="filterCards()" />
+      <span class="res-count" id="res-count">&mdash; candidaturas</span>
+      <input id="search" type="text" placeholder="Buscar por nome ou e-mail..." oninput="filterCards()" />
     </div>
     <div id="card-list"></div>
   </div>
@@ -292,12 +289,11 @@
 <script>
 const SUPABASE_URL = 'https://errofscpxzcbhloutdpb.supabase.co';
 const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVycm9mc2NweHpjYmhsb3V0ZHBiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ1NTM1OTIsImV4cCI6MjA5MDEyOTU5Mn0.KLrdir04-WdKkSUYqCZvFeyB36qb2MyBX60szAXfWLI';
-const ADMIN_PASSWORD = 'winner2025';
+const ADMIN_PASSWORD = 'llctech2025';
 
 let allData = [];
 const charts = {};
 
-// ── chart defaults ──
 Chart.defaults.color = 'rgba(255,255,255,0.45)';
 Chart.defaults.font.family = 'Inter';
 Chart.defaults.font.size = 11;
@@ -334,17 +330,17 @@ function checkPw() {
 
 // ── data ──
 async function loadData() {
-  document.getElementById('refresh-btn').textContent = '↻ …';
+  document.getElementById('refresh-btn').textContent = '\u21BB ...';
   try {
     const res = await fetch(
-      `${SUPABASE_URL}/rest/v1/mentoria_submissions?select=*&order=created_at.desc`,
+      `${SUPABASE_URL}/rest/v1/candidatos_automacao?select=*&order=created_at.desc`,
       { headers: { apikey: SUPABASE_KEY, Authorization: `Bearer ${SUPABASE_KEY}` } }
     );
     allData = await res.json();
     renderDashboard(allData);
     renderCards(allData);
   } catch(e) { console.error(e); }
-  document.getElementById('refresh-btn').textContent = '↻ Atualizar';
+  document.getElementById('refresh-btn').textContent = '\u21BB Atualizar';
 }
 
 // ── page switch ──
@@ -359,48 +355,47 @@ function showPage(name) {
 function renderDashboard(data) {
   if (!Array.isArray(data) || !data.length) return;
 
-  // stat cards
   document.getElementById('st-total').textContent = data.length;
 
   const last = data[0];
   const lastDate = new Date(last.created_at);
   document.getElementById('st-last').textContent =
-    lastDate.toLocaleDateString('pt-BR', { day:'2-digit', month:'short' }) + ' · ' +
+    lastDate.toLocaleDateString('pt-BR', { day:'2-digit', month:'short' }) + ' \u00B7 ' +
     lastDate.toLocaleTimeString('pt-BR', { hour:'2-digit', minute:'2-digit' });
-  document.getElementById('st-last-name').textContent = last.nome || '—';
+  document.getElementById('st-last-name').textContent = last.nome || '\u2014';
 
-  // maturidade top
-  const matCount = count(data, 'maturidade_ia');
-  const topMat = topKey(matCount);
-  document.getElementById('st-maturidade').textContent = topMat || '—';
+  // nivel I.A. top
+  const nivelIaCount = count(data, 'nivel_ia');
+  document.getElementById('st-nivel-ia').textContent = topKey(nivelIaCount) || '\u2014';
 
-  // travamento top
-  const travAll = [];
-  data.forEach(r => { if (r.travamentos) r.travamentos.split(' | ').forEach(t => travAll.push(t.trim())); });
-  const travCount = countArr(travAll);
-  const topTrav = topKey(travCount);
-  document.getElementById('st-travamento').textContent = topTrav || '—';
+  // nivel dev top
+  const nivelDevCount = count(data, 'nivel_dev');
+  document.getElementById('st-nivel-dev').textContent = topKey(nivelDevCount) || '\u2014';
 
-  // ── chart: maturidade ──
-  const matLabels = ['Nunca usei','Uso pontualmente','Uso com frequência','Já implementei no meu negócio'];
-  const matVals   = matLabels.map(l => matCount[l] || 0);
-  buildBar('chart-maturidade', matLabels.map(l => l.replace('Já implementei no meu negócio','Já implementei')), matVals, false);
+  // ── chart: nivel I.A. ──
+  const iaLabels = ['Uso basico (prompts simples, chatbots)','Uso intermediario (prompts avancados, automacoes com I.A.)','Uso avancado (integro I.A. em fluxos, APIs, agentes)','Construo solucoes completas com I.A.'];
+  const iaShort  = ['Basico','Intermediario','Avancado','Construtor'];
+  const iaVals   = iaLabels.map(l => nivelIaCount[l] || 0);
+  buildBar('chart-nivel-ia', iaShort, iaVals, false);
 
-  // ── chart: travamentos ──
-  const travSorted = Object.entries(travCount).sort((a,b) => b[1]-a[1]).slice(0,7);
-  const travLabels = travSorted.map(([k]) => truncate(k, 32));
-  const travVals   = travSorted.map(([,v]) => v);
-  buildBar('chart-travamentos', travLabels, travVals, true);
+  // ── chart: ferramentas automacao ──
+  const ferrAll = [];
+  data.forEach(r => { if (r.ferramentas_automacao) r.ferramentas_automacao.split(' | ').forEach(t => ferrAll.push(t.trim())); });
+  const ferrCount = countArr(ferrAll);
+  const ferrSorted = Object.entries(ferrCount).sort((a,b) => b[1]-a[1]).slice(0,8);
+  buildBar('chart-ferramentas', ferrSorted.map(([k]) => truncate(k, 28)), ferrSorted.map(([,v]) => v), true);
 
-  // ── chart: tamanho time ──
-  const timeLabels = ['Só eu','2 a 5','6 a 15','16 a 50','Mais de 50'];
-  const timeCount  = count(data, 'tamanho_time');
-  buildBar('chart-time', timeLabels, timeLabels.map(l => timeCount[l] || 0), false);
+  // ── chart: nivel dev ──
+  const devLabels = ['Nao programo, mas entendo logica','Nocoes basicas (HTML, CSS, scripts simples)','Intermediario (consumo APIs, crio scripts, uso Git)','Avancado (desenvolvo aplicacoes completas)'];
+  const devShort  = ['Nao programo','Basico','Intermediario','Avancado'];
+  const devVals   = devLabels.map(l => nivelDevCount[l] || 0);
+  buildBar('chart-nivel-dev', devShort, devVals, false);
 
-  // ── chart: tempo na área ──
-  const tempoLabels = ['Menos de 1 ano','1 a 3 anos','3 a 5 anos','5 a 10 anos','Mais de 10 anos'];
-  const tempoCount  = count(data, 'tempo_trabalho');
-  buildBar('chart-tempo', tempoLabels.map(l => l.replace(' anos','a').replace(' ano','a')), tempoLabels.map(l => tempoCount[l] || 0), false);
+  // ── chart: disponibilidade ──
+  const dispLabels = ['Tempo integral (CLT ou PJ)','Meio periodo','Freelancer / por projeto','Estou disponivel, me conta a proposta'];
+  const dispShort  = ['Integral','Meio periodo','Freelancer','Disponivel'];
+  const dispCount  = count(data, 'disponibilidade');
+  buildBar('chart-disponibilidade', dispShort, dispLabels.map(l => dispCount[l] || 0), false);
 
   // ── chart: timeline ──
   buildTimeline(data);
@@ -426,7 +421,6 @@ function buildBar(id, labels, values, horizontal) {
 }
 
 function buildTimeline(data) {
-  // group by day
   const byDay = {};
   data.forEach(r => {
     const d = r.created_at.slice(0,10);
@@ -482,15 +476,15 @@ function countArr(arr) {
 function topKey(obj) {
   return Object.entries(obj).sort((a,b)=>b[1]-a[1])[0]?.[0];
 }
-function truncate(s, n) { return s.length > n ? s.slice(0,n) + '…' : s; }
+function truncate(s, n) { return s.length > n ? s.slice(0,n) + '\u2026' : s; }
 
 // ── response cards ──
 function renderCards(data) {
   const list = document.getElementById('card-list');
-  document.getElementById('res-count').textContent = `${data.length} resposta${data.length !== 1 ? 's' : ''}`;
+  document.getElementById('res-count').textContent = `${data.length} candidatura${data.length !== 1 ? 's' : ''}`;
 
   if (!Array.isArray(data) || !data.length) {
-    list.innerHTML = '<div class="empty-state">Nenhuma resposta ainda.</div>';
+    list.innerHTML = '<div class="empty-state">Nenhuma candidatura ainda.</div>';
     return;
   }
 
@@ -499,60 +493,80 @@ function renderCards(data) {
     const dateStr = date.toLocaleDateString('pt-BR', { day:'2-digit', month:'short', year:'numeric' });
     const timeStr = date.toLocaleTimeString('pt-BR', { hour:'2-digit', minute:'2-digit' });
 
-    const chips = r.travamentos
-      ? r.travamentos.split(' | ').map(t => `<span class="chip">${t.trim()}</span>`).join('')
-      : '<span class="field-empty">Não respondido</span>';
+    const ferrChips = r.ferramentas_automacao
+      ? r.ferramentas_automacao.split(' | ').map(t => `<span class="chip">${t.trim()}</span>`).join('')
+      : '<span class="field-empty">Nao respondido</span>';
 
     const v = val => val
       ? `<span class="field-val">${val}</span>`
-      : `<span class="field-empty">Não respondido</span>`;
+      : `<span class="field-empty">Nao respondido</span>`;
 
     return `
     <div class="card" id="card-${i}">
       <div class="card-header" onclick="toggleCard(${i})">
         <span class="card-num">${String(i+1).padStart(2,'0')}</span>
-        <span class="card-name">${r.nome || '—'}</span>
+        <span class="card-name">${r.nome || '\u2014'}</span>
         <span class="card-meta">
-          <span>${r.email || '—'}</span>
-          <span>${r.whatsapp || '—'}</span>
+          <span>${r.email || '\u2014'}</span>
+          <span>${r.whatsapp || '\u2014'}</span>
         </span>
-        <span class="card-date">${dateStr} · ${timeStr}</span>
-        <button class="del-btn" onclick="deleteEntry(event,'${r.id}',${i})" title="Excluir">✕</button>
-        <span class="chevron">▼</span>
+        <span class="card-date">${dateStr} \u00B7 ${timeStr}</span>
+        <button class="del-btn" onclick="deleteEntry(event,'${r.id}',${i})" title="Excluir">\u2715</button>
+        <span class="chevron">\u25BC</span>
       </div>
       <div class="card-body">
         <div class="sections">
           <div>
-            <div class="sec-title">Dados básicos</div>
+            <div class="sec-title">Dados pessoais</div>
             <div class="fields">
-              <div class="field-row"><span class="field-label">Instagram</span>${v(r.instagram)}</div>
+              <div class="field-row"><span class="field-label">LinkedIn</span>${v(r.linkedin)}</div>
+              <div class="field-row"><span class="field-label">Cidade</span>${v(r.cidade)}</div>
             </div>
           </div>
           <div>
-            <div class="sec-title">Sobre você e seu negócio</div>
+            <div class="sec-title">Sobre o candidato</div>
             <div class="fields">
-              <div class="field-row"><span class="field-label">O que faz</span>${v(r.o_que_faz)}</div>
-              <div class="field-row"><span class="field-label">Tempo na área</span>${v(r.tempo_trabalho)}</div>
-              <div class="field-row"><span class="field-label">Tamanho da empresa</span>${v(r.tamanho_empresa)}</div>
-              <div class="field-row"><span class="field-label">Tamanho do time</span>${v(r.tamanho_time)}</div>
+              <div class="field-row"><span class="field-label">Disponibilidade</span>${v(r.disponibilidade)}</div>
+              <div class="field-row"><span class="field-label">Trajetoria</span>${v(r.trajetoria)}</div>
             </div>
           </div>
           <div>
-            <div class="sec-title">Sobre IA</div>
+            <div class="sec-title">Experiencia com I.A.</div>
             <div class="fields">
-              <div class="field-row"><span class="field-label">IA no dia a dia</span>${v(r.ia_dia_a_dia)}</div>
-              <div class="field-row"><span class="field-label">Maturidade com IA</span>${v(r.maturidade_ia)}</div>
-              <div class="field-row"><span class="field-label">Ferramentas usadas</span>${v(r.ferramentas_ia)}</div>
-              <div class="field-row"><span class="field-label">Maiores travamentos</span><div class="chips">${chips}</div></div>
+              <div class="field-row"><span class="field-label">Ferramentas I.A.</span>${v(r.ferramentas_ia)}</div>
+              <div class="field-row"><span class="field-label">Nivel I.A.</span>${v(r.nivel_ia)}</div>
+              <div class="field-row"><span class="field-label">Caso real</span>${v(r.caso_real_ia)}</div>
             </div>
           </div>
           <div>
-            <div class="sec-title">Intenção e expectativa</div>
+            <div class="sec-title">Automacoes</div>
             <div class="fields">
-              <div class="field-row"><span class="field-label">O que vende</span>${v(r.o_que_vende)}</div>
-              <div class="field-row"><span class="field-label">Problema em 30 dias</span>${v(r.problema_30_dias)}</div>
-              <div class="field-row"><span class="field-label">Sucesso em 8 semanas</span>${v(r.sucesso_8_semanas)}</div>
-              <div class="field-row"><span class="field-label">Por que entrou</span>${v(r.motivo_mentoria)}</div>
+              <div class="field-row"><span class="field-label">Ferramentas</span><div class="chips">${ferrChips}</div></div>
+              <div class="field-row"><span class="field-label">Automacao do zero</span>${v(r.automacao_do_zero)}</div>
+              <div class="field-row"><span class="field-label">Mais complexa</span>${v(r.automacao_complexa)}</div>
+            </div>
+          </div>
+          <div>
+            <div class="sec-title">Desenvolvimento</div>
+            <div class="fields">
+              <div class="field-row"><span class="field-label">Nivel dev</span>${v(r.nivel_dev)}</div>
+              <div class="field-row"><span class="field-label">Linguagens</span>${v(r.linguagens)}</div>
+            </div>
+          </div>
+          <div>
+            <div class="sec-title">Mentalidade</div>
+            <div class="fields">
+              <div class="field-row"><span class="field-label">Como se atualiza</span>${v(r.como_se_atualiza)}</div>
+              <div class="field-row"><span class="field-label">Ideia → sistema</span>${v(r.ideia_para_sistema)}</div>
+              <div class="field-row"><span class="field-label">Por que LLC Tech</span>${v(r.por_que_llc)}</div>
+            </div>
+          </div>
+          <div>
+            <div class="sec-title">Extras</div>
+            <div class="fields">
+              <div class="field-row"><span class="field-label">Portfolio / GitHub</span>${v(r.portfolio)}</div>
+              <div class="field-row"><span class="field-label">Quando pode comecar</span>${v(r.quando_comecar)}</div>
+              <div class="field-row"><span class="field-label">Pretensao</span>${v(r.pretensao)}</div>
               <div class="field-row"><span class="field-label">Info adicional</span>${v(r.info_adicional)}</div>
             </div>
           </div>
@@ -568,11 +582,11 @@ function toggleCard(i) {
 
 async function deleteEntry(e, id, i) {
   e.stopPropagation();
-  if (!confirm('Excluir essa resposta?')) return;
+  if (!confirm('Excluir essa candidatura?')) return;
   const card = document.getElementById(`card-${i}`);
   card.classList.add('deleting');
   try {
-    await fetch(`${SUPABASE_URL}/rest/v1/mentoria_submissions?id=eq.${id}`, {
+    await fetch(`${SUPABASE_URL}/rest/v1/candidatos_automacao?id=eq.${id}`, {
       method: 'DELETE',
       headers: { apikey: SUPABASE_KEY, Authorization: `Bearer ${SUPABASE_KEY}` }
     });
