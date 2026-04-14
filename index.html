@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Onboarding · Mentoria de IA — Winner.AI</title>
+  <title>Vaga · Gestor de Automações e I.A. — LLC Tech</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
@@ -277,72 +277,93 @@
   <div id="form-wrap"></div>
   <div id="counter"></div>
   <div id="nav-btns">
-    <button class="nav-btn" id="btn-prev" onclick="go(-1)">↑</button>
-    <button class="nav-btn" id="btn-next" onclick="go(1)">↓</button>
+    <button class="nav-btn" id="btn-prev" onclick="go(-1)">&#8593;</button>
+    <button class="nav-btn" id="btn-next" onclick="go(1)">&#8595;</button>
   </div>
 
 <script>
 /* ─────────────────────────────────────────────
-   CONFIGURAÇÃO — edite aqui para cada curso
+   CONFIGURACAO
 ───────────────────────────────────────────── */
 const CONFIG = {
-  logo:           'Olucaslopesc',
-  titulo:         'Vamos conversar',
-  subtitulo:      '',               // ex: 'Curso de IA Aplicada'
-  descricao:      'Leva alguns minutos. Me ajuda a entender seu contexto antes de entrarmos em contato.',
-  encerramento:   'Recebido. Obrigado.',
-  msgFinal:       'Vou analisar suas respostas e te chamo em breve.',
-  assinatura:     '— Lucas',
+  logo:           'LLC Tech',
+  titulo:         'Gestor de Automacoes e I.A.',
+  subtitulo:      'Processo seletivo',
+  descricao:      'Leva uns 5 minutos. Queremos conhecer voce, entender seu repertorio e ver se faz sentido caminharmos juntos.',
+  encerramento:   'Candidatura recebida.',
+  msgFinal:       'Vamos analisar com calma e retornamos em breve.',
+  assinatura:     '— Equipe LLC Tech',
 };
-/* ─────────────────────────────────────────────
-   FIM DA CONFIGURAÇÃO
-───────────────────────────────────────────── */
+/* ─────────────────────────────────────────── */
 
 const QUESTIONS = [
-  { id:1,  sec:"Dados básicos",            text:"Seu nome completo",                                          type:"text",     req:true  },
-  { id:2,  sec:"Dados básicos",            text:"Seu melhor e-mail",                                          type:"email",    req:true  },
-  { id:3,  sec:"Dados básicos",            text:"WhatsApp",                                                   type:"tel",      req:true  },
-  { id:4,  sec:"Dados básicos",            text:"@ do Instagram",                                            type:"text",     req:true,  ph:"@seuinstagram" },
-  { id:5,  sec:"Sobre você e seu negócio", text:"O que você faz?",                                           type:"text",     hint:"Uma frase. Ex: Empresário no ramo de saúde / Líder comercial em indústria" },
-  { id:6,  sec:"Sobre você e seu negócio", text:"Há quanto tempo você trabalha com isso?",                   type:"radio",    opts:["Menos de 1 ano","1 a 3 anos","3 a 5 anos","5 a 10 anos","Mais de 10 anos"] },
-  { id:7,  sec:"Sobre você e seu negócio", text:"Qual o tamanho da sua empresa hoje?",                       type:"text",     hint:"Faturamento mensal ou número de funcionários — o que preferir compartilhar" },
-  { id:8,  sec:"Sobre você e seu negócio", text:"Quantas pessoas você lidera ou tem no seu time?",           type:"radio",    opts:["Só eu","2 a 5","6 a 15","16 a 50","Mais de 50"] },
-  { id:9,  sec:"Sobre IA",                 text:"Como a IA está inserida no seu dia a dia hoje?",            type:"textarea", req:true  },
-  { id:10, sec:"Sobre IA",                 text:"Qual seu nível de maturidade com IA?",                      type:"radio",    req:true, opts:["Nunca usei","Uso pontualmente","Uso com frequência","Já implementei no meu negócio"] },
-  { id:11, sec:"Sobre IA",                 text:"Quais ferramentas de IA você já usa ou já tentou usar?",    type:"text",     hint:"Ex: ChatGPT, Claude, Make, n8n, outros" },
-  { id:12, sec:"Sobre IA",                 text:"Quais são seus maiores travamentos agora?",                 type:"checkbox", req:true, hint:"Selecione 3 a 4",
-    opts:["Não sei por onde começar com IA","Sei usar, mas não consigo aplicar no meu negócio","Falta de tempo para aprender e implementar","Meu time não adota as ferramentas","Não sei quais processos automatizar","Tenho medo de depender de tecnologia que não entendo","Não consigo medir se a IA está gerando resultado","Outro"] },
-  { id:13, sec:"Intenção e expectativa",   text:"O que você vende ou entrega hoje?",                         type:"textarea", hint:"Descreva brevemente suas ofertas ou serviços." },
-  { id:14, sec:"Intenção e expectativa",   text:"Se eu pudesse resolver UM problema pra você nos próximos 30 dias, qual seria?", type:"textarea", hint:"Seja específico. Quanto mais claro, mais consigo te ajudar." },
-  { id:15, sec:"Intenção e expectativa",   text:"Daqui a 8 semanas, o que significa sucesso pra você?",      type:"textarea", hint:"O que você quer ter implementado, automatizado ou resolvido? Seja específico." },
-  { id:16, sec:"Intenção e expectativa",   text:"Como você conheceu meu trabalho?",                          type:"radio", req:true,
-    opts:["Instagram","YouTube","Indicação de alguém","Evento presencial","LinkedIn","Outro"] },
-  { id:17, sec:"Intenção e expectativa",   text:"Tem algo que você gostaria que eu soubesse sobre você antes de começar?", type:"textarea", hint:"Opcional. Mas se tiver algo relevante, me conta aqui." },
-  { id:18, sec:"O Programa", type:"info",
-    title:"Programa de Aceleração de Negócios com IA",
-    body:`Perfeito! Então eu quero te apresentar o <b>Programa de Aceleração de Negócios com IA</b>.<br><br>
-Dentro do programa, você terá acesso não a um curso… mas a um <b>PLANO</b>:<br><br>
-➡️ diagnóstico estratégico individualizado – feito por mim.<br>
-➡️ plano claro do que construir – desenhado a quatro mãos, eu e você.<br>
-➡️ acompanhamento direto comigo.<br>
-➡️ mentorias individuais comigo.<br>
-➡️ ambiente estratégico de troca com outros participantes e grupo vip do seu negócio.<br>
-➡️ proximidade real com quem tá no campo de batalha todos os dias.` },
-  { id:19, sec:"Qualificação", text:"Você tem disponibilidade de tempo pra executar o plano que for traçado na mentoria?", type:"radio", req:true,
-    opts:["Sim, tenho tempo e energia pra isso","Tenho pouco tempo, mas dou um jeito","Não, no momento não"] },
-  { id:20, sec:"Qualificação", text:"Esse é um programa de mentoria com investimento na faixa de 5k a 12k. Você tem condições de investir nesse momento sem comprometer sua operação?", type:"radio", req:true,
-    opts:["Sim, com certeza consigo","Sim, mas com planejamento","Não nesse momento"] },
-  { id:21, sec:"Outra opção", type:"info",
-    showIf: () => answers[20] === "Não nesse momento",
-    title:"Sem problema — tenho outro caminho pra você",
-    body:`Entendo o momento. Eu tenho <b>cursos 100% mão na massa</b> que podem ser o início perfeito da sua jornada com IA — você aprende no seu ritmo e já começa a aplicar no seu negócio.<br><br>Pode ser exatamente o passo certo agora.` },
-  { id:22, sec:"Outra opção", text:"Quer acessar?", type:"radio", req:true,
-    showIf: () => answers[20] === "Não nesse momento",
-    opts:["Sim, quero conhecer os cursos","Não, obrigado"] },
+  // ── Sobre a vaga ──
+  { id:0, sec:"A vaga", type:"info",
+    title:"O que estamos buscando",
+    body:`Procuramos alguem que <b>transforma ideia em sistema funcionando</b>.<br><br>
+No dia a dia, voce vai:<br><br>
+→ Usar Claude, ChatGPT e outras I.A.s como ferramentas reais de trabalho<br>
+→ Estruturar automacoes do zero (Claude, APIS, etc)<br>
+→ Conectar sistemas, criar fluxos e resolver problemas com tecnologia<br>
+→ Ter nocao de desenvolvimento — nao precisa ser dev, mas precisa pensar como um<br>
+→ Estar sempre testando e aprendendo novas ferramentas de I.A.<br><br>
+Se voce se identificou, bora. Leva uns 5 minutos.` },
+
+  // ── Dados Pessoais ──
+  { id:1,  sec:"Dados pessoais", text:"Seu nome completo",   type:"text",  req:true },
+  { id:2,  sec:"Dados pessoais", text:"Seu melhor e-mail",   type:"email", req:true },
+  { id:3,  sec:"Dados pessoais", text:"WhatsApp com DDD",    type:"tel",   req:true },
+  { id:4,  sec:"Dados pessoais", text:"Seu LinkedIn",        type:"text",  req:false, ph:"https://linkedin.com/in/seuperfil" },
+
+  // ── Sobre voce ──
+  { id:5,  sec:"Sobre voce", text:"Onde voce mora?",                         type:"text", req:true, hint:"Cidade e estado" },
+  { id:6,  sec:"Sobre voce", text:"Qual sua disponibilidade?",               type:"radio", req:true,
+    opts:["Tempo integral (CLT ou PJ)","Meio periodo","Freelancer / por projeto","Estou disponivel, me conta a proposta"] },
+  { id:7,  sec:"Sobre voce", text:"Conta brevemente sua trajetoria profissional", type:"textarea", req:true,
+    hint:"O que voce ja fez, onde trabalhou, o que te trouxe ate aqui." },
+
+  // ── Experiencia com I.A. ──
+  { id:8,  sec:"Experiencia com I.A.", text:"Quais ferramentas de I.A. voce usa no dia a dia?", type:"textarea", req:true,
+    hint:"Ex: Claude, ChatGPT, Gemini, Copilot, Midjourney, ElevenLabs, Cursor, v0..." },
+  { id:9,  sec:"Experiencia com I.A.", text:"Como voce se classifica no uso de I.A.?", type:"radio", req:true,
+    opts:["Uso basico (prompts simples, chatbots)","Uso intermediario (prompts avancados, automacoes com I.A.)","Uso avancado (integro I.A. em fluxos, APIs, agentes)","Construo solucoes completas com I.A."] },
+  { id:10, sec:"Experiencia com I.A.", text:"Descreva uma situacao real onde voce usou I.A. pra resolver um problema", type:"textarea", req:true,
+    hint:"Pode ser no trabalho, projeto pessoal ou freela. Queremos entender como voce pensa e aplica." },
+
+  // ── Automacoes ──
+  { id:11, sec:"Automacoes", text:"Quais ferramentas de automacao voce domina?", type:"checkbox", req:true, hint:"Selecione todas que se aplicam",
+    opts:["Make (Integromat)","n8n","Zapier","Python","APIs REST / Webhooks","Google Apps Script","Power Automate","Outro"] },
+  { id:12, sec:"Automacoes", text:"Ja estruturou alguma automacao do zero? Conta pra gente", type:"textarea", req:true,
+    hint:"Qual era o problema, o que voce montou e qual foi o resultado." },
+  { id:13, sec:"Automacoes", text:"Qual a automacao mais complexa que voce ja criou?", type:"textarea", req:false,
+    hint:"Integracao entre sistemas, fluxos com multiplas etapas, bots... vale tudo." },
+
+  // ── Desenvolvimento ──
+  { id:14, sec:"Desenvolvimento", text:"Seu nivel de conhecimento em desenvolvimento", type:"radio", req:true,
+    opts:["Nao programo, mas entendo logica","Nocoes basicas (HTML, CSS, scripts simples)","Intermediario (consumo APIs, crio scripts, uso Git)","Avancado (desenvolvo aplicacoes completas)"] },
+  { id:15, sec:"Desenvolvimento", text:"Quais linguagens ou tecnologias voce tem contato?", type:"text", req:false,
+    hint:"Ex: JavaScript, Python, Node.js, SQL, React, Docker..." },
+
+  // ── Mentalidade e Fit ──
+  { id:16, sec:"Mentalidade", text:"Como voce se mantem atualizado com novas ferramentas de I.A.?", type:"textarea", req:true,
+    hint:"Newsletters, comunidades, testes por conta propria... queremos saber seu processo." },
+  { id:17, sec:"Mentalidade", text:"Pra voce, o que significa 'transformar ideia em sistema funcionando'?", type:"textarea", req:true,
+    hint:"Resposta livre. Queremos entender como voce pensa." },
+  { id:18, sec:"Mentalidade", text:"Por que voce quer trabalhar na LLC Tech?", type:"textarea", req:true,
+    hint:"O que te chamou atencao e por que acha que faz sentido." },
+
+  // ── Extras ──
+  { id:19, sec:"Extras", text:"Tem portfolio, GitHub ou algo que mostre seu trabalho?", type:"text", req:false,
+    ph:"Cole o link aqui" },
+  { id:20, sec:"Extras", text:"Quando voce poderia comecar?", type:"radio", req:true,
+    opts:["Imediatamente","Em ate 2 semanas","Em ate 1 mes","Preciso negociar com emprego atual"] },
+  { id:21, sec:"Extras", text:"Pretensao salarial ou valor/hora (PJ)", type:"text", req:false,
+    hint:"Pode ser uma faixa. Ex: R$ 1.500 a R$ 4.000" },
+  { id:22, sec:"Extras", text:"Quer deixar mais alguma coisa que a gente deveria saber?", type:"textarea", req:false,
+    hint:"Opcional. Fique a vontade." },
 ];
 
-const WHATSAPP_URL = 'https://wa.me/5534997285143?text=Oi%20Lucas%2C%20acabei%20de%20enviar%20minha%20aplica%C3%A7%C3%A3o';
-const CURSOS_URL   = 'https://pay.kiwify.com.br/9z7AF2U';
+const WHATSAPP_URL = 'https://wa.me/5534997285143?text=Oi%2C%20acabei%20de%20enviar%20minha%20candidatura%20pra%20vaga%20de%20Gestor%20de%20Automacoes';
 
 const KEYS = 'ABCDEFGHIJKLMNOP';
 const answers = {};
@@ -355,9 +376,9 @@ function buildSlides() {
 
   wrap.appendChild(makeSlide('slide-0', 'slide welcome', `
     <div class="logo">${CONFIG.logo}</div>
-    <h1>${CONFIG.titulo}${CONFIG.subtitulo ? '<br>' + CONFIG.subtitulo : ''}</h1>
+    <h1>${CONFIG.titulo}${CONFIG.subtitulo ? '<br><span style="font-size:0.55em;color:var(--dim);font-weight:400;letter-spacing:0.05em;text-transform:uppercase">' + CONFIG.subtitulo + '</span>' : ''}</h1>
     <p>${CONFIG.descricao}</p>
-    <button class="btn" onclick="go(1)">Começar →</button>
+    <button class="btn" onclick="go(1)">Comecar &rarr;</button>
   `));
 
   QUESTIONS.forEach((q, i) => {
@@ -372,7 +393,7 @@ function buildSlides() {
         <div style="border-left:2px solid #fff;padding:1.1rem 1.3rem;background:rgba(255,255,255,0.04)">
           <p style="font-size:1rem;color:#fff;line-height:1.85;font-weight:300">${q.body}</p>
         </div>
-        <button class="btn-continue" onclick="go(1)">Continuar →</button>
+        <button class="btn-continue" onclick="go(1)">Continuar &rarr;</button>
       `));
       return;
     }
@@ -383,7 +404,7 @@ function buildSlides() {
           oninput="answers[${q.id}]=this.value"
           onkeydown="if(event.key==='Enter'){event.preventDefault();go(1)}" />
         <div class="err-msg" id="err-${q.id}">Por favor, preencha este campo.</div>
-        <button class="btn-continue" onclick="go(1)">Continuar →</button>`;
+        <button class="btn-continue" onclick="go(1)">Continuar &rarr;</button>`;
     } else if (q.type === 'textarea') {
       body = `
         <textarea class="input-line" id="inp-${q.id}" rows="3"
@@ -391,7 +412,7 @@ function buildSlides() {
           oninput="answers[${q.id}]=this.value"
           onkeydown="if(event.key==='Enter'&&event.ctrlKey){event.preventDefault();go(1)}"></textarea>
         <div class="err-msg" id="err-${q.id}">Por favor, preencha este campo.</div>
-        <button class="btn-continue" onclick="go(1)">Continuar →</button>`;
+        <button class="btn-continue" onclick="go(1)">Continuar &rarr;</button>`;
     } else if (q.type === 'radio') {
       const opts = q.opts.map((o,j) => `
         <div class="opt" id="opt-${q.id}-${j}" onclick="pickRadio(${q.id},${j})">
@@ -399,30 +420,30 @@ function buildSlides() {
           <span class="opt-text">${o}</span>
         </div>`).join('');
       body = `<div class="opts">${opts}</div>
-        <div class="err-msg" id="err-${q.id}">Por favor, selecione uma opção.</div>`;
+        <div class="err-msg" id="err-${q.id}">Por favor, selecione uma opcao.</div>`;
     } else if (q.type === 'checkbox') {
       const items = q.opts.map((o,j) => {
         const isOutro = o === 'Outro';
         return `
           <div class="chk" id="chk-${q.id}-${j}" onclick="toggleChk(${q.id},${j},${isOutro})">
-            <div class="chk-box"><span class="chk-check">✓</span></div>
+            <div class="chk-box"><span class="chk-check">&#10003;</span></div>
             <span class="chk-text">${o}</span>
           </div>
           ${isOutro ? `<div class="outro-field" id="outro-wrap-${q.id}">
-            <input type="text" id="outro-${q.id}" placeholder="Descreva..."
+            <input type="text" id="outro-${q.id}" placeholder="Qual?"
               oninput="updateOutro(${q.id},this.value)" onclick="event.stopPropagation()" />
           </div>` : ''}`;
       }).join('');
       body = `
         <div class="sel-count" id="cnt-${q.id}">Selecionados: <b>0</b></div>
         <div class="chk-scroll"><div class="chk-list">${items}</div></div>
-        <div class="err-msg" id="err-${q.id}">Selecione pelo menos 3 opções.</div>
-        <button class="btn-continue" style="margin-top:.75rem" onclick="go(1)">Continuar →</button>`;
+        <div class="err-msg" id="err-${q.id}">Selecione pelo menos 1 opcao.</div>
+        <button class="btn-continue" style="margin-top:.75rem" onclick="go(1)">Continuar &rarr;</button>`;
     }
 
     wrap.appendChild(makeSlide(`slide-${i+1}`, 'slide', `
       <div class="q-section">${q.sec}</div>
-      <div class="q-num">${String(q.id).padStart(2,'0')} →</div>
+      <div class="q-num">${String(q.id).padStart(2,'0')} &rarr;</div>
       <div class="q-text">${q.text}${star}</div>
       ${hint}${body}
     `));
@@ -488,7 +509,7 @@ function validate(idx) {
   } else if (q.type==='radio') {
     ok = answers[q.id] !== undefined;
   } else if (q.type==='checkbox') {
-    ok = (chkState[q.id]||new Set()).size >= 3;
+    ok = (chkState[q.id]||new Set()).size >= 1;
   }
   if (err) err.classList.toggle('show', !ok);
   return ok;
@@ -497,30 +518,12 @@ function validate(idx) {
 function renderClosing() {
   const el = document.getElementById(`slide-${QUESTIONS.length+1}`);
   if (!el) return;
-  const wantsCursos = answers[22] === "Sim, quero conhecer os cursos";
-  const semGrana    = answers[20] === "Não nesse momento";
-  let tag, h2, p, btn;
-  if (wantsCursos) {
-    tag = "Bora começar";
-    h2  = "Ótimo! Vou te mandar o acesso aos cursos.";
-    p   = "Clique no botão abaixo pra conhecer os cursos mão na massa 👇";
-    btn = `<a class="btn" style="margin-top:2rem;text-decoration:none" href="${CURSOS_URL}" target="_blank" rel="noopener">Ver os cursos →</a>`;
-  } else if (semGrana) {
-    tag = "Recebido";
-    h2  = "Obrigado pela sua sinceridade.";
-    p   = "Quando fizer sentido pra você, volta aqui. Te desejo muito sucesso na sua jornada.";
-    btn = "";
-  } else {
-    tag = "Aplicação recebida";
-    h2  = "Maravilha! Vamos analisar sua aplicação e te enviamos mensagem em até 24h!";
-    p   = "Agora clique no botão abaixo pra falar no WhatsApp sobre sua aplicação e tirar qualquer dúvida 👇";
-    btn = `<a class="btn" style="margin-top:2rem;text-decoration:none" href="${WHATSAPP_URL}" target="_blank" rel="noopener">Falar no WhatsApp →</a>`;
-  }
   el.innerHTML = `
-    <div class="tag">${tag}</div>
-    <h2>${h2}</h2>
-    <p>${p}</p>
-    ${btn}
+    <div class="tag">Candidatura enviada</div>
+    <h2>Recebemos sua candidatura!</h2>
+    <p>Vamos analisar tudo com calma. Se fizer sentido, entramos em contato pelo WhatsApp ou e-mail que voce informou.</p>
+    <p style="margin-top:1rem">Quer agilizar? Manda um oi no nosso WhatsApp:</p>
+    <a class="btn" style="margin-top:1.5rem;text-decoration:none" href="${WHATSAPP_URL}" target="_blank" rel="noopener">Falar no WhatsApp &rarr;</a>
     <div class="sig">${CONFIG.assinatura}</div>
   `;
 }
@@ -596,31 +599,43 @@ const STEVO_NUMBER = '5534988213494';
 async function notifyStevo() {
   const f = (label, val) => val ? `*${label}:* ${val}\n` : '';
   const text =
-    `🚀 *Novo lead — Aceleração com IA*\n\n` +
+    `📋 *Nova candidatura — Gestor de Automacoes e I.A.*\n` +
+    `*LLC Tech*\n\n` +
+    `👤 *Dados Pessoais*\n` +
     f('Nome', answers[1]) +
     f('E-mail', answers[2]) +
     f('WhatsApp', answers[3]) +
-    f('Instagram', answers[4]) +
+    f('LinkedIn', answers[4]) +
     `\n` +
-    f('O que faz', answers[5]) +
-    f('Tempo de trabalho', answers[6]) +
-    f('Tamanho empresa', answers[7]) +
-    f('Tamanho time', answers[8]) +
+    `📍 *Sobre o Candidato*\n` +
+    f('Cidade', answers[5]) +
+    f('Disponibilidade', answers[6]) +
+    f('Trajetoria', answers[7]) +
     `\n` +
-    f('IA no dia a dia', answers[9]) +
-    f('Maturidade IA', answers[10]) +
-    f('Ferramentas IA', answers[11]) +
-    f('Travamentos', Array.isArray(answers[12]) ? answers[12].join(' | ') : answers[12]) +
+    `🤖 *Experiencia com I.A.*\n` +
+    f('Ferramentas I.A.', answers[8]) +
+    f('Nivel I.A.', answers[9]) +
+    f('Caso real', answers[10]) +
     `\n` +
-    f('O que vende', answers[13]) +
-    f('Problema 30 dias', answers[14]) +
-    f('Sucesso 8 semanas', answers[15]) +
-    f('Como conheceu', answers[16]) +
-    f('Info adicional', answers[17]) +
-    `\n🎯 *Qualificação*\n` +
-    f('Disponibilidade', answers[19]) +
-    f('Investimento', answers[20]) +
-    f('Quer cursos', answers[22]);
+    `⚙️ *Automacoes*\n` +
+    f('Ferramentas', Array.isArray(answers[11]) ? answers[11].join(' | ') : answers[11]) +
+    f('Automacao do zero', answers[12]) +
+    f('Mais complexa', answers[13]) +
+    `\n` +
+    `💻 *Desenvolvimento*\n` +
+    f('Nivel dev', answers[14]) +
+    f('Linguagens', answers[15]) +
+    `\n` +
+    `🧠 *Mentalidade*\n` +
+    f('Como se atualiza', answers[16]) +
+    f('Ideia → sistema', answers[17]) +
+    f('Por que LLC Tech', answers[18]) +
+    `\n` +
+    `📎 *Extras*\n` +
+    f('Portfolio/GitHub', answers[19]) +
+    f('Quando pode comecar', answers[20]) +
+    f('Pretensao', answers[21]) +
+    f('Info adicional', answers[22]);
 
   try {
     await fetch(`${STEVO_URL}/send/text`, {
@@ -636,29 +651,31 @@ const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZ
 
 async function submitToSupabase() {
   const payload = {
-    nome:             answers[1]  || null,
-    email:            answers[2]  || null,
-    whatsapp:         answers[3]  || null,
-    instagram:        answers[4]  || null,
-    o_que_faz:        answers[5]  || null,
-    tempo_trabalho:   answers[6]  || null,
-    tamanho_empresa:  answers[7]  || null,
-    tamanho_time:     answers[8]  || null,
-    ia_dia_a_dia:     answers[9]  || null,
-    maturidade_ia:    answers[10] || null,
-    ferramentas_ia:   answers[11] || null,
-    travamentos:      Array.isArray(answers[12]) ? answers[12].join(' | ') : (answers[12] || null),
-    o_que_vende:      answers[13] || null,
-    problema_30_dias: answers[14] || null,
-    sucesso_8_semanas:answers[15] || null,
-    como_conheceu:    answers[16] || null,
-    info_adicional:   answers[17] || null,
-    disponibilidade:  answers[19] || null,
-    investimento:     answers[20] || null,
-    quer_cursos:      answers[22] || null,
+    nome:               answers[1]  || null,
+    email:              answers[2]  || null,
+    whatsapp:           answers[3]  || null,
+    linkedin:           answers[4]  || null,
+    cidade:             answers[5]  || null,
+    disponibilidade:    answers[6]  || null,
+    trajetoria:         answers[7]  || null,
+    ferramentas_ia:     answers[8]  || null,
+    nivel_ia:           answers[9]  || null,
+    caso_real_ia:       answers[10] || null,
+    ferramentas_automacao: Array.isArray(answers[11]) ? answers[11].join(' | ') : (answers[11] || null),
+    automacao_do_zero:  answers[12] || null,
+    automacao_complexa: answers[13] || null,
+    nivel_dev:          answers[14] || null,
+    linguagens:         answers[15] || null,
+    como_se_atualiza:   answers[16] || null,
+    ideia_para_sistema: answers[17] || null,
+    por_que_llc:        answers[18] || null,
+    portfolio:          answers[19] || null,
+    quando_comecar:     answers[20] || null,
+    pretensao:          answers[21] || null,
+    info_adicional:     answers[22] || null,
   };
   try {
-    await fetch(`${SUPABASE_URL}/rest/v1/leads_aceleracao`, {
+    await fetch(`${SUPABASE_URL}/rest/v1/candidatos_automacao`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
