@@ -332,7 +332,7 @@ Se voce se identificou, bora. Leva uns 5 minutos.` },
 
   // ── Automacoes ──
   { id:11, sec:"Automacoes", text:"Quais ferramentas de automacao voce domina?", type:"checkbox", req:true, hint:"Selecione todas que se aplicam",
-    opts:["Make (Integromat)","n8n","Zapier","Python","APIs REST / Webhooks","Google Apps Script","Power Automate","Outro"] },
+    opts:["Claude Code","Codex (OpenAI)","Cursor / Windsurf","Make (Integromat)","n8n","Zapier","Python","APIs REST / Webhooks","Google Apps Script","Power Automate","Outro"] },
   { id:12, sec:"Automacoes", text:"Ja estruturou alguma automacao do zero? Conta pra gente", type:"textarea", req:true,
     hint:"Qual era o problema, o que voce montou e qual foi o resultado." },
   { id:13, sec:"Automacoes", text:"Qual a automacao mais complexa que voce ja criou?", type:"textarea", req:false,
@@ -541,7 +541,6 @@ function go(dir) {
   if (next < 0 || next >= TOTAL) return;
   if (dir === 1 && next === TOTAL-1) {
     submitToSupabase();
-    notifyStevo();
     renderClosing();
   }
 
