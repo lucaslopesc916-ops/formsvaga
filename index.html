@@ -363,8 +363,6 @@ Se voce se identificou, bora. Leva uns 5 minutos.` },
     hint:"Opcional. Fique a vontade." },
 ];
 
-const WHATSAPP_URL = 'https://wa.me/5534997285143?text=Oi%2C%20acabei%20de%20enviar%20minha%20candidatura%20pra%20vaga%20de%20Gestor%20de%20Automacoes';
-
 const KEYS = 'ABCDEFGHIJKLMNOP';
 const answers = {};
 const chkState = {};
@@ -521,9 +519,7 @@ function renderClosing() {
   el.innerHTML = `
     <div class="tag">Candidatura enviada</div>
     <h2>Recebemos sua candidatura!</h2>
-    <p>Vamos analisar tudo com calma. Se fizer sentido, entramos em contato pelo WhatsApp ou e-mail que voce informou.</p>
-    <p style="margin-top:1rem">Quer agilizar? Manda um oi no nosso WhatsApp:</p>
-    <a class="btn" style="margin-top:1.5rem;text-decoration:none" href="${WHATSAPP_URL}" target="_blank" rel="noopener">Falar no WhatsApp &rarr;</a>
+    <p>Vamos analisar tudo com calma. Se fizer sentido, entramos em contato pelo e-mail que voce informou.</p>
     <div class="sig">${CONFIG.assinatura}</div>
   `;
 }
